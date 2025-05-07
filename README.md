@@ -1,8 +1,5 @@
-# Clash of Clans Bot – Automatisiertes Farming & Trophy-Deranking 🛡️
-
 # Clash of Clans Bot – Automated Farming & Trophy Deranking 🛡️
 
----
 
 ## Inhaltsverzeichnis / Table of Contents 
 
