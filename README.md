@@ -7,7 +7,7 @@
 
 * [Einleitung](#einleitung)
 * [Funktionen](#funktionen)
-* [Systemvoraussetzungen](#systemvoraussetzungen)
+* [Voraussetzungen](#voraussetzungen)
 * [Verwendung](#verwendung)
 * [Trophy Deranker](#trophy-deranker)
 * [Hinweise zur Angriffskomposition](#hinweise-zur-angriffskomposition)
@@ -20,7 +20,7 @@
 
 * [Introduction](#introduction)
 * [Features](#features)
-* [System Requirements](#system-requirements)
+* [Requirements](#requirements)
 * [Usage](#usage)
 * [Trophy Deranker](#trophy-deranker-1)
 * [Attack Composition Notes](#attack-composition-notes)
@@ -48,7 +48,7 @@ Die Accountnamen „MAIN“ bzw. "1" und „ALT“ bzw. "2" sind **frei gewählt
 
 ---
 
-### Systemvoraussetzungen
+### Voraussetzungen
 
 * Zwei Monitore empfohlen:
 
@@ -142,7 +142,7 @@ Account names like “MAIN” resp. "1" and “ALT” resp. "2" are **just examp
 
 ---
 
-### System Requirements
+### Requirements
 
 * Dual-monitor setup recommended:
 
