@@ -58,6 +58,7 @@ Die Accountnamen „MAIN“ bzw. "1" und „ALT“ bzw. "2" sind **frei gewählt
 * Windows-Betriebssystem
 * Installiertes [Tesseract-OCR](https://github.com/tesseract-ocr/tesseract/releases/ "Tesseract-OCR GitHub Downloads")
  (Systempfad, z.B. C:\Program Files\Tesseract-OCR\tesseract.exe)
+* [Google Play Spiele (Beta)](https://play.google.com/googleplaygames "Google Play Spiele Download")
 * Python-Bibliotheken (per pip install):
 
 ```bash
@@ -150,6 +151,7 @@ Account names like “MAIN” resp. "1" and “ALT” resp. "2" are **just examp
 * Single-monitor setup works too, but the bot will block input during farming
 * Windows operating system
 * Installed [Tesseract-OCR](https://github.com/tesseract-ocr/tesseract/releases/ "Tesseract-OCR GitHub Downloads") (system path, e.g. C:\Program Files\Tesseract-OCR\tesseract.exe)
+* [Google Play Games (Beta)](https://play.google.com/googleplaygames "Google Play Games Download")
 * Python libraries (install via pip):
 
 ```bash
