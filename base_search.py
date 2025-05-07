@@ -5,6 +5,8 @@ import pyautogui
 import pytesseract
 from PIL import Image
 from attack import attack_with_e_drags, attack_with_dragons
+from dotenv import load_dotenv
+import os
 
 # --------------------------------------------- DE --------------------------------------------- #
 # Die Main Logik hinter der Suchfunktion nach einer Base mit einer bestimmten Menge an Loot.
@@ -25,7 +27,8 @@ MIN_COMBINED_MAIN_ACCOUNT = 1800000  # 1.8 Million Elixir + Gold Combined
 MIN_COMBINED_ALT_ACCOUNT = 600000  # 600K Elixir + Gold Combined
 ATTACK_COUNTER = 0
 
-pytesseract.pytesseract.tesseract_cmd = r"Your Tesseract-OCR Installation Path"
+load_dotenv()
+pytesseract.pytesseract.tesseract_cmd = os.getenv("TESSERACT_CMD")
 # Typically, it's installed in C:\Program Files\Tesseract-OCR or C:\Program Files (x86)\Tesseract-OCR
 
 
@@ -38,7 +41,7 @@ def searchforbase(user_account):
     pyautogui.click(1400, 700)
     time.sleep(5)
     while LOOKING_FOR_BASE:
-        path = r"Path for the temporary loot screenshots."
+        path = os.getenv("SCREENSHOT_PATH")
         # Screenshot aufnehmen
         pyautogui.screenshot(path, region=(30, 120, 250, 130))
 
