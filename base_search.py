@@ -28,7 +28,7 @@ MIN_COMBINED_ALT_ACCOUNT = 600000  # 600K Elixir + Gold Combined
 ATTACK_COUNTER = 0
 
 load_dotenv()
-pytesseract.pytesseract.tesseract_cmd = os.getenv("TESSERACT_CMD")
+pytesseract.pytesseract.tesseract_cmd = os.getenv("TESSERACT_CMD") # YOUR Tesseract-OCR Filepath here
 # Typically, it's installed in C:\Program Files\Tesseract-OCR or C:\Program Files (x86)\Tesseract-OCR
 
 
@@ -41,7 +41,7 @@ def searchforbase(user_account):
     pyautogui.click(1400, 700)
     time.sleep(5)
     while LOOKING_FOR_BASE:
-        path = os.getenv("SCREENSHOT_PATH")
+        path = os.getenv("SCREENSHOT_PATH") # YOUR path for the temporary screenshots here
         # Screenshot aufnehmen
         pyautogui.screenshot(path, region=(30, 120, 250, 130))
 
