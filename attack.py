@@ -1,7 +1,7 @@
 import random
 import time
 import pyautogui
-from AttacksByPosition import e_drags_top_left, e_drags_top_right, e_drags_bottom_left, \
+from attacks_by_position import e_drags_top_left, e_drags_top_right, e_drags_bottom_left, \
     e_drags_bottom_right, dragons_top_right, dragons_top_left, dragons_bottom_right, \
     dragons_bottom_left
 

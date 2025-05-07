@@ -1,6 +1,6 @@
 import time
 from used_account import get_account_choice
-from BaseSearch import searchforbase
+from base_search import searchforbase
 
 # --------------------------------------------- DE --------------------------------------------- #
 # Die Main Logik. Hier wird die Account-Choice abgefragt und an "searchforbase" gepassed. Dann läuft der Loot-Prozess
