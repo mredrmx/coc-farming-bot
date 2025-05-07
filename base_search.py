@@ -80,8 +80,8 @@ def searchforbase(user_account):
 
         elif user_account == "2":
             try:
-                if MIN_COMBINED_ALT_ACCOUNT <= int(loot_list[0]) + int(loot_list[1]) and int(loot_list[0]) < 400000 and int(
-                        loot_list[1]) < 400000:
+                if MIN_COMBINED_ALT_ACCOUNT <= int(loot_list[0]) + int(loot_list[1]) and int(loot_list[0]) < 1000000 and int(
+                        loot_list[1]) < 1000000:
                     print(f"Found good base! Gold: {loot_list[0]}, Elixir: {loot_list[1]}")
                     LOOKING_FOR_BASE = False
                     attack_with_dragons()  # Angriff starten
