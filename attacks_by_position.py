@@ -395,12 +395,12 @@ def dragons_top_right():
     pyautogui.click(1008 + random.randint(20, 40), 514 + random.randint(3, 40))
     time.sleep(random.uniform(0.5, 0.8))
     pyautogui.click(1204 + random.randint(20, 40), 632 + random.randint(20, 40))
-    time.sleep(random.uniform(2, 4))
+    time.sleep(random.uniform(10, 15))
 
     # KING ABILITY
     pyautogui.click(463, 987)
 
-    time.sleep(random.randint(45, 55))
+    time.sleep(random.randint(35, 45))
 
 
 def dragons_top_left():
@@ -437,12 +437,12 @@ def dragons_top_left():
     pyautogui.click(916 + random.randint(20, 40), 558 + random.randint(3, 40))
     time.sleep(random.uniform(0.5, 0.8))
     pyautogui.click(1066 + random.randint(20, 40), 442 + random.randint(20, 40))
-    time.sleep(random.uniform(2, 4))
+    time.sleep(random.uniform(10, 15))
 
     # KING ABILITY
     pyautogui.click(463, 987)
 
-    time.sleep(random.randint(45, 55))
+    time.sleep(random.randint(35, 45))
 
 
 def dragons_bottom_left():
@@ -479,12 +479,12 @@ def dragons_bottom_left():
     pyautogui.click(916 + random.randint(20, 40), 348 + random.randint(3, 40))
     time.sleep(random.uniform(0.5, 0.8))
     pyautogui.click(1032 + random.randint(20, 40), 464 + random.randint(20, 40))
-    time.sleep(random.uniform(2, 4))
+    time.sleep(random.uniform(10, 15))
 
     # KING ABILITY
     pyautogui.click(463, 987)
 
-    time.sleep(random.randint(45, 55))
+    time.sleep(random.randint(35, 45))
 
 
 def dragons_bottom_right():
@@ -521,9 +521,9 @@ def dragons_bottom_right():
     pyautogui.click(1066 + random.randint(20, 40), 350 + random.randint(3, 40))
     time.sleep(random.uniform(0.5, 0.8))
     pyautogui.click(844 + random.randint(20, 40), 524 + random.randint(20, 40))
-    time.sleep(random.uniform(2, 4))
+    time.sleep(random.uniform(10, 15))
     
     # KING ABILITY
     pyautogui.click(463, 987)
 
-    time.sleep(random.randint(45, 55))
+    time.sleep(random.randint(35, 45))
