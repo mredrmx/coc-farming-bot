@@ -24,7 +24,7 @@ import os
 
 LOOKING_FOR_BASE = True
 MIN_COMBINED_MAIN_ACCOUNT = 1800000  # 1.8 Million Elixir + Gold Combined
-MIN_COMBINED_ALT_ACCOUNT = 900000  # 900K Elixir + Gold Combined
+MIN_COMBINED_ALT_ACCOUNT = 1200000  # 1.2 Million Elixir + Gold Combined
 ATTACK_COUNTER = 0
 
 load_dotenv()
@@ -80,8 +80,8 @@ def searchforbase(user_account):
 
         elif user_account == "2":
             try:
-                if MIN_COMBINED_ALT_ACCOUNT <= int(loot_list[0]) + int(loot_list[1]) and int(loot_list[0]) < 1000000 and int(
-                        loot_list[1]) < 1000000:
+                if MIN_COMBINED_ALT_ACCOUNT <= int(loot_list[0]) + int(loot_list[1]) and int(loot_list[0]) < 1400000 and int(
+                        loot_list[1]) < 1400000:
                     print(f"Found good base! Gold: {loot_list[0]}, Elixir: {loot_list[1]}")
                     LOOKING_FOR_BASE = False
                     attack_with_dragons()  # Angriff starten
