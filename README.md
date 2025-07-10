@@ -1,124 +1,180 @@
-# Clash of Clans Bot – Automated Farming & Trophy Deranking 🛡️
+# Clash of Clans Bot – Otomatik Yağma ve Trophy Düşürme 🛡️
 
+## İçindekiler / Table of Contents 
 
-## Inhaltsverzeichnis / Table of Contents 
+**Türkçe**
 
-**Deutsch**
-
-* [Einleitung](#einleitung)
-* [Funktionen](#funktionen)
-* [Voraussetzungen](#voraussetzungen)
-* [Verwendung](#verwendung)
-* [Trophy Deranker](#trophy-deranker)
-* [Hinweise zur Angriffskomposition](#hinweise-zur-angriffskomposition)
-* [Zukünftige Verbesserungen](#zukünftige-verbesserungen)
-* [Haftungsausschluss](#haftungsausschluss)
-
-
+* [Giriş](#giriş)
+* [Özellikler](#özellikler)
+* [Gereksinimler](#gereksinimler)
+* [Kurulum](#kurulum)
+* [Kullanım](#kullanım)
+* [Trophy Düşürücü](#trophy-düşürücü)
+* [Saldırı Ordusu Detayları](#saldırı-ordusu-detayları)
+* [Gelecek İyileştirmeler](#gelecek-iyileştirmeler)
+* [Sorumluluk Reddi](#sorumluluk-reddi)
 
 **English**
 
 * [Introduction](#introduction)
 * [Features](#features)
 * [Requirements](#requirements)
+* [Installation](#installation)
 * [Usage](#usage)
 * [Trophy Deranker](#trophy-deranker-1)
-* [Attack Composition Notes](#attack-composition-notes)
+* [Attack Composition Details](#attack-composition-details)
 * [Future Improvements](#future-improvements)
 * [Disclaimer](#disclaimer)
 
 ---
 
-## Deutsch
+## Türkçe
 
-### Einleitung
+### Giriş
 
-Ein vollautomatisierter Bot für Clash of Clans, der Basen mit hohem Loot erkennt und automatisch angreift. Zusätzlich ist ein separates Tool enthalten, das gezielt Trophäen reduziert.
+Clash of Clans için tam otomatik bir yağma botu. Yüksek yağma içeren üsleri OCR teknolojisi ile tespit eder ve otomatik olarak saldırır. Ayrıca trophy düşürmek için ayrı bir araç da dahildir.
 
-Die Accountnamen „MAIN“ bzw. "1" und „ALT“ bzw. "2" sind **frei gewählt** und dienen nur der Unterscheidung – sie können im Code beliebig angepasst werden.
-
----
-
-### Funktionen
-
-* OCR-gestützte Basenerkennung (Texterkennung via Tesseract)
-* Automatisierte Angriffe mit zufälliger Position
-* Zwei Account-Modi mit individuellen Loot-Schwellen (nicht verpflichtend)
-* Separater Trophy-Deranker für gezielten Pokalverlust
+Hesap isimleri "MAIN" (1) ve "ALT" (2) **örnek olarak verilmiştir** ve sadece ayırt etmek için kullanılır – kodda istediğiniz gibi değiştirebilirsiniz.
 
 ---
 
-### Voraussetzungen
+### Özellikler
 
-* Zwei Monitore empfohlen:
+* OCR destekli üs tespiti (Tesseract ile metin tanıma)
+* Rastgele pozisyonlarla otomatik saldırılar
+* İki hesap modu ile özel yağma eşikleri
+* Trophy düşürmek için ayrı araç
+* Gerçek zamanlı yağma miktarı analizi
+* Akıllı base arama algoritması
 
-  * Monitor 1: Clash of Clans läuft über Google Play Spiele (Beta)
-  * Monitor 2: Für gleichzeitige Nutzung anderer Programme
-* Ein Monitor funktioniert ebenfalls – allerdings blockiert der Bot alle Eingaben während des Farmens
-* Windows-Betriebssystem
-* Installiertes [Tesseract-OCR](https://github.com/tesseract-ocr/tesseract/releases/ "Tesseract-OCR GitHub Downloads")
- (Systempfad, z.B. C:\Program Files\Tesseract-OCR\tesseract.exe)
-* [Google Play Spiele (Beta)](https://play.google.com/googleplaygames "Google Play Spiele Download")
-* Python-Bibliotheken (per pip install):
+---
+
+### Gereksinimler
+
+* **İki monitör önerilir:**
+  * Monitör 1: Clash of Clans (Google Play Oyunları Beta üzerinden)
+  * Monitör 2: Diğer programları kullanmak için
+* Tek monitör de çalışır – ancak bot yağma sırasında tüm girişleri bloklar
+* Windows işletim sistemi
+* [Tesseract-OCR](https://github.com/tesseract-ocr/tesseract/releases/) kurulu olmalı
+* [Google Play Oyunları (Beta)](https://play.google.com/googleplaygames) kurulu olmalı
+* Python kütüphaneleri (pip ile kurulum):
 
 ```bash
-pyautogui cv2 pytesseract numpy Pillow
+pip install pyautogui opencv-python pytesseract numpy Pillow python-dotenv
 ```
 
 ---
 
-### Verwendung
+### Kurulum
 
-1. Starte `main.py`
-2. Wähle per Eingabe `1` **für MAIN** oder `2` **für ALT**
-3. Der Bot sucht automatisch nach einer Base mit ausreichendem Loot
-4. Wird eine gute Base gefunden, startet der Angriff – vollautomatisch
+1. **Tesseract-OCR'ı indirin ve kurun:**
+   - [Tesseract-OCR GitHub](https://github.com/tesseract-ocr/tesseract/releases/) adresinden indirin
+   - C:\Program Files\Tesseract-OCR\ klasörüne kurun
+   - Sistem PATH'ine ekleyin
 
----
+2. **Çevre değişkenlerini ayarlayın:**
+   - `.env` dosyası oluşturun
+   - Tesseract yolunu ve screenshot yolunu belirtin
 
-### Trophy Deranker
-
-Das Skript **trophy\_deranker.py** ist ein **optionales Extra-Tool**, das bewusst Matches verliert, um Trophäen zu reduzieren.
-Es ist ideal, um gezielt in niedrigen Pokalregionen zu farmen.
-
----
-
-### Hinweise zur Angriffskomposition
-
-* **Account „MAIN“**:
-
-  * Truppen: E-Dragons, Ballons, Warden, Queen & King
-  * Zauber: Rage, Zap
-
-* **Account „ALT“**:
-
-  * Truppen: Dragons, King
-  * Zauber: Rage, Zap
-  * (minimalistische Komposition für schwächere Accounts)
-
-* Andere Armeen können **manuell ergänzt** werden – dies erfordert aber **Codeanpassung**
-
-* Das Skript funktioniert **nicht mit komplexeren Armeen**, da es rein visuell klickt
-
-* Ohne AI nicht perfekt – aber reicht locker, um gemütlich nebenbei Netflix oder Musik zu genießen
+3. **Python kütüphanelerini kurun:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 ---
 
-### Zukünftige Verbesserungen
+### Kullanım
 
-* KI-Integration (z. B. ChatGPT) zur:
-
-  * **Besseren Loot-Auswertung**
-  * **Erkennung von Luftabwehren & Base-Strukturen**
-  * **Menschlicheren Angriffen**
-* Mehr Konfigurationsoptionen für Armeen und Loot-Grenzwerte
+1. `main.py` dosyasını çalıştırın
+2. Giriş olarak `1` (MAIN hesap) veya `2` (ALT hesap) seçin
+3. Bot otomatik olarak yeterli yağma içeren üs arayacak
+4. İyi bir üs bulunduğunda saldırı otomatik olarak başlayacak
 
 ---
 
-### Haftungsausschluss
+### Trophy Düşürücü
 
-Dies ist ein **inoffizielles Tool**, steht **nicht in Verbindung mit Supercell**.
-Die Nutzung erfolgt **auf eigenes Risiko**. Ein Bann ist theoretisch möglich – auch wenn der Bot „menschlich“ agiert.
+`trophy_deranker.py` scripti **isteğe bağlı ek bir araçtır** ve bilinçli olarak maç kaybederek trophy düşürür.
+Düşük trophy bölgelerinde yağma yapmak için idealdir.
+
+---
+
+### Saldırı Ordusu Detayları
+
+#### **MAIN Hesap (Account 1) - E-Dragon Saldırısı**
+
+**Birlikler:**
+- **E-Dragonlar:** 10 adet (ana saldırı gücü)
+- **Savaş Makinesi:** 1 adet (tank rolü)
+- **Kral:** 1 adet (Barbarian King)
+- **Kraliçe:** 1 adet (Archer Queen)
+- **Muhafız:** 1 adet (Grand Warden)
+- **Balonlar:** 2 adet (hava desteği)
+
+**Büyüler:**
+- **Rage Büyüsü:** 5 adet (saldırı gücünü artırır)
+- **Zap Büyüsü:** 1 adet (savunma yapılarını zayıflatır)
+
+**Saldırı Stratejisi:**
+1. Base'in bir köşesinden başlar
+2. E-Dragonları o köşe boyunca yerleştirir
+3. Kahramanları stratejik noktalara konumlandırır
+4. Rage büyülerini saldırı yoluna bırakır
+5. Muhafız yeteneğini tetikler
+6. Zap büyüsünü base ortasına atar
+
+#### **ALT Hesap (Account 2) - Dragon Saldırısı**
+
+**Birlikler:**
+- **Dragonlar:** 10 adet (ana saldırı gücü)
+- **Kral:** 1 adet (Barbarian King)
+
+**Büyüler:**
+- **Rage Büyüsü:** 3 adet (saldırı gücünü artırır)
+
+**Saldırı Stratejisi:**
+1. Base'in bir köşesinden başlar
+2. Dragonları o köşe boyunca yerleştirir
+3. Kralı stratejik bir noktaya konumlandırır
+4. Rage büyülerini saldırı yoluna bırakır
+5. Kral yeteneğini tetikler
+
+#### **Saldırı Pozisyonları**
+Her saldırı 4 farklı pozisyondan rastgele seçilir:
+- **Sağ Üst Köşe**
+- **Sol Üst Köşe**
+- **Sağ Alt Köşe**
+- **Sol Alt Köşe**
+
+#### **Yağma Eşikleri**
+- **MAIN Hesap:** Minimum 1.8M toplam yağma (Altın + Elixir)
+- **ALT Hesap:** Minimum 1.2M toplam yağma (Altın + Elixir)
+
+#### **Önemli Notlar**
+- Bot sadece görsel tıklama yapar, AI kullanmaz
+- Karmaşık ordular için kod değişikliği gerekir
+- Mükemmel değil ama Netflix izlerken ya da müzik dinlerken rahatlıkla kullanılabilir
+- Her saldırıda rastgele gecikmeler eklenir (insan davranışını taklit etmek için)
+
+---
+
+### Gelecek İyileştirmeler
+
+* **AI Entegrasyonu (örn. ChatGPT):**
+  * Daha iyi yağma değerlendirmesi
+  * Hava savunması ve base yapısı tespiti
+  * Daha insansı saldırılar
+* Ordular ve yağma eşikleri için daha fazla konfigürasyon seçeneği
+* Farklı saldırı stratejileri
+* Gerçek zamanlı base analizi
+
+---
+
+### Sorumluluk Reddi
+
+Bu **resmi olmayan bir araçtır** ve **Supercell ile bağlantısı yoktur**.
+Kullanım **kendi sorumluluğunuzdadır**. Bot "insansı" davransa da ban riski teorik olarak mümkündür.
 
 ---
 
@@ -129,7 +185,7 @@ Die Nutzung erfolgt **auf eigenes Risiko**. Ein Bann ist theoretisch möglich �
 A fully automated Clash of Clans farming bot that scans loot using OCR and attacks automatically.
 A separate tool is included for intentional trophy dropping.
 
-Account names like “MAIN” resp. "1" and “ALT” resp. "2" are **just examples** – feel free to change them in the code.
+Account names like "MAIN" (1) and "ALT" (2) are **just examples** – feel free to change them in the code.
 
 ---
 
@@ -139,24 +195,43 @@ Account names like “MAIN” resp. "1" and “ALT” resp. "2" are **just examp
 * Automated base searching & attacks
 * Two account profiles with custom loot requirements
 * Optional tool to intentionally lose matches (Trophy Deranker)
+* Real-time loot amount analysis
+* Smart base searching algorithm
 
 ---
 
 ### Requirements
 
-* Dual-monitor setup recommended:
-
+* **Dual-monitor setup recommended:**
   * Monitor 1: Clash of Clans running via Google Play Games (Beta)
   * Monitor 2: For multitasking (e.g. browsing, Netflix)
 * Single-monitor setup works too, but the bot will block input during farming
 * Windows operating system
-* Installed [Tesseract-OCR](https://github.com/tesseract-ocr/tesseract/releases/ "Tesseract-OCR GitHub Downloads") (system path, e.g. C:\Program Files\Tesseract-OCR\tesseract.exe)
-* [Google Play Games (Beta)](https://play.google.com/googleplaygames "Google Play Games Download")
+* Installed [Tesseract-OCR](https://github.com/tesseract-ocr/tesseract/releases/) (system path, e.g. C:\Program Files\Tesseract-OCR\tesseract.exe)
+* [Google Play Games (Beta)](https://play.google.com/googleplaygames) installed
 * Python libraries (install via pip):
 
 ```bash
-pyautogui cv2 pytesseract numpy Pillow
+pip install pyautogui opencv-python pytesseract numpy Pillow python-dotenv
 ```
+
+---
+
+### Installation
+
+1. **Download and install Tesseract-OCR:**
+   - Download from [Tesseract-OCR GitHub](https://github.com/tesseract-ocr/tesseract/releases/)
+   - Install to C:\Program Files\Tesseract-OCR\
+   - Add to system PATH
+
+2. **Set up environment variables:**
+   - Create `.env` file
+   - Specify Tesseract path and screenshot path
+
+3. **Install Python libraries:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 ---
 
@@ -171,40 +246,79 @@ pyautogui cv2 pytesseract numpy Pillow
 
 ### Trophy Deranker
 
-The **trophy\_deranker.py** script is an **optional extra tool** that intentionally loses matches to drop trophies.
+The **trophy_deranker.py** script is an **optional extra tool** that intentionally loses matches to drop trophies.
 It is ideal for farming in low trophy ranges.
 
 ---
 
-### Attack Composition Notes
+### Attack Composition Details
 
-* **“MAIN” Account**:
+#### **MAIN Account (Account 1) - E-Dragon Attack**
 
-  * Troops: E-Dragons, Balloons, Warden, Queen & King
-  * Spells: Rage, Zap
+**Troops:**
+- **E-Dragons:** 10 units (main attack force)
+- **War Machine:** 1 unit (tank role)
+- **King:** 1 unit (Barbarian King)
+- **Queen:** 1 unit (Archer Queen)
+- **Warden:** 1 unit (Grand Warden)
+- **Balloons:** 2 units (air support)
 
-* **“ALT” Account**:
+**Spells:**
+- **Rage Spell:** 5 units (increases attack power)
+- **Zap Spell:** 1 unit (weakens defense structures)
 
-  * Troops: Balloons, King
-  * Spells: Rage
-  * (minimalistic composition for lower-level accounts)
+**Attack Strategy:**
+1. Starts from one corner of the base
+2. Places E-Dragons along that corner
+3. Positions heroes at strategic points
+4. Drops Rage spells along the attack path
+5. Activates Warden ability
+6. Casts Zap spell in the center of the base
 
-* Other armies can be **manually added** – but this requires **code modification**
+#### **ALT Account (Account 2) - Dragon Attack**
 
-* The script **does not work with more complex armies** as it clicks based on visuals
+**Troops:**
+- **Dragons:** 10 units (main attack force)
+- **King:** 1 unit (Barbarian King)
 
-* Without AI, it's not perfect – but it’s good enough for casual Netflix or music while farming
+**Spells:**
+- **Rage Spell:** 3 units (increases attack power)
+
+**Attack Strategy:**
+1. Starts from one corner of the base
+2. Places Dragons along that corner
+3. Positions King at a strategic point
+4. Drops Rage spells along the attack path
+5. Activates King ability
+
+#### **Attack Positions**
+Each attack randomly selects from 4 different positions:
+- **Top Right Corner**
+- **Top Left Corner**
+- **Bottom Right Corner**
+- **Bottom Left Corner**
+
+#### **Loot Thresholds**
+- **MAIN Account:** Minimum 1.8M total loot (Gold + Elixir)
+- **ALT Account:** Minimum 1.2M total loot (Gold + Elixir)
+
+#### **Important Notes**
+- Bot only performs visual clicking, no AI used
+- Code modification required for complex armies
+- Not perfect but good enough for casual Netflix watching or music listening
+- Random delays added to each attack (to mimic human behavior)
 
 ---
 
 ### Future Improvements
 
-* AI integration (e.g. ChatGPT) to:
-
+* **AI integration (e.g. ChatGPT) to:**
   * **Better loot evaluation**
   * **Air defense & base structure detection**
   * **More human-like attacks**
 * More configuration options for troops and loot thresholds
+* Different attack strategies
+* Real-time base analysis
 
 ---
 
