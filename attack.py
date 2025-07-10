@@ -1,9 +1,9 @@
 import random
 import time
-import pyautogui
 from attacks_by_position import e_drags_top_left, e_drags_top_right, e_drags_bottom_left, \
     e_drags_bottom_right, dragons_top_right, dragons_top_left, dragons_bottom_right, \
     dragons_bottom_left
+from screen_utils import click
 
 # --------------------------------------------- TR --------------------------------------------- #
 # Base bulunduğunda saldırıların arkasındaki ana mantık.
@@ -40,12 +40,12 @@ def attack_with_e_drags():
         e_drags_bottom_right()
     
     # Saldırı sonrası işlemler
-    print("Angriff beendet.")  # Saldırı tamamlandı
-    pyautogui.click(150, 850)  # Saldırı sonu butonuna tıkla
+    print("Saldırı tamamlandı.")
+    click(150, 850)  # Saldırı sonu butonuna tıkla
     time.sleep(0.3)
-    pyautogui.click(1170, 700)  # Onay butonuna tıkla
+    click(1170, 700)  # Onay butonuna tıkla
     time.sleep(0.3)
-    pyautogui.click(960, 930)   # Ana menüye dön butonuna tıkla
+    click(960, 930)   # Ana menüye dön butonuna tıkla
     time.sleep(2)
 
 
@@ -65,10 +65,10 @@ def attack_with_dragons():
         dragons_bottom_right()
     
     # Saldırı sonrası işlemler
-    print("Angriff beendet.")  # Saldırı tamamlandı
-    pyautogui.click(150, 850)  # Saldırı sonu butonuna tıkla
-    time.sleep(0.3)
-    pyautogui.click(1170, 700)  # Onay butonuna tıkla
-    time.sleep(0.3)
-    pyautogui.click(960, 930)   # Ana menüye dön butonuna tıkla
+    print("Saldırı tamamlandı.")
+    click(150, 850)  # Saldırı sonu butonuna tıkla
+    time.sleep(1)
+    click(1170, 700)  # Onay butonuna tıkla
+    time.sleep(1)
+    click(960, 930)   # Ana menüye dön butonuna tıkla
     time.sleep(2)

@@ -1,12 +1,12 @@
 import time
 import cv2
 import numpy as np
-import pyautogui
 import pytesseract
 from PIL import Image
 from attack import attack_with_e_drags, attack_with_dragons
 from dotenv import load_dotenv
 import os
+from screen_utils import click, screenshot, print_screen_info
 
 # --------------------------------------------- TR --------------------------------------------- #
 # Belirli miktarda yağma içeren base arama fonksiyonunun arkasındaki ana mantık.
@@ -45,18 +45,27 @@ def searchforbase(user_account):
     LOOKING_FOR_BASE = True  # ÇOK ÖNEMLİ: her başlangıçta True olarak ayarla!
     time.sleep(1)
     
+    # Ekran bilgilerini göster
+    print_screen_info()
+    
     # Base arama ekranına geç
-    pyautogui.click(100, 1000)  # Arama butonuna tıkla
+    click(100, 1000)  # Arama butonuna tıkla
     time.sleep(0.5)
-    pyautogui.click(1400, 700)  # Onay butonuna tıkla
-    time.sleep(5)  # Arama için bekle
+    click(1400, 700)  # Onay butonuna tıkla
+    time.sleep(10)  # Arama için bekle
     
     # Base arama döngüsü
     while LOOKING_FOR_BASE:
         path = os.getenv("SCREENSHOT_PATH")  # Geçici ekran görüntüleri için yol
         
         # Yağma miktarını gösteren alanın ekran görüntüsünü al
-        pyautogui.screenshot(path, region=(30, 120, 250, 130))
+        try:
+            screenshot(path, region=(30, 120, 250, 130))
+        except Exception as e:
+            print(f"Ekran görüntüsü alınamadı! {e}")
+            print("5 saniye bekleyip tekrar deneyeceğim...")
+            time.sleep(10)
+            continue
 
         # Ekran görüntüsünü yükle ve işle (HSV + Maske)
         if path is None:
@@ -98,12 +107,12 @@ def searchforbase(user_account):
                     attack_with_e_drags()  # E-Dragon saldırısı başlat
                     break  # ÇOK ÖNEMLİ: saldırıdan sonra döngüden çık!
                 else:
-                    pyautogui.click(x=1785, y=820)  # Sonraki base butonuna tıkla
-                    time.sleep(5)
+                    click(x=1785, y=820)  # Sonraki base butonuna tıkla
+                    time.sleep(10)
             except (ValueError, IndexError):
                 # OCR hatası durumunda sonraki base'ye geç
-                pyautogui.click(x=1785, y=820)
-                time.sleep(5)
+                click(x=1785, y=820)
+                time.sleep(10)
 
         # İkinci hesap (Account 2) için kontrol
         elif user_account == "2":
@@ -116,12 +125,12 @@ def searchforbase(user_account):
                     attack_with_dragons()  # Dragon saldırısı başlat
                     break  # ÇOK ÖNEMLİ: saldırıdan sonra döngüden çık!
                 else:
-                    pyautogui.click(x=1785, y=820)  # Sonraki base butonuna tıkla
-                    time.sleep(5)
+                    click(x=1785, y=820)  # Sonraki base butonuna tıkla
+                    time.sleep(10)
             except (ValueError, IndexError):
                 # OCR hatası durumunda sonraki base'ye geç
-                pyautogui.click(x=1785, y=820)
-                time.sleep(5)
+                click(x=1785, y=820)
+                time.sleep(10)
 
     # Döngü sonunda durumu sıfırla
     LOOKING_FOR_BASE = True

@@ -1,10 +1,28 @@
+# Geçici dosyalar
 mouse.py
 screenshot.py
-AIR_DEFENSE_LEVEL_7.png
-AIR_DEFENSE_LEVEL_8.png
-AIR_DEFENSE_LEVEL_9.png
-AIR_DEFENSE_LEVEL_10.png
-AIR_DEFENSE_LEVEL_11.png
+*.png
 AirDefenseZapper.py
 github.png
+
+# Çevre değişkenleri
 .env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Geçici ekran görüntüleri
+C:/temp/screenshot.png
+temp/
+
+# IDE dosyaları
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Log dosyaları
+*.log

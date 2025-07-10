@@ -1,6 +1,7 @@
 import random
 import time
-import pyautogui
+from screen_utils import click, moveTo, dragTo
+import re
 
 # --------------------------------------------- TR --------------------------------------------- #
 # Burada tüm saldırılar kodlanmıştır. Çok fazla manuel iş, base'in 4 farklı tarafı, bot'u
@@ -38,334 +39,334 @@ import pyautogui
 def e_drags_top_right():
     # Sağ üst köşeden saldırı stratejisi
     time.sleep(1)
-    pyautogui.moveTo(1400, 400)  # Başlangıç pozisyonuna git
+    moveTo(1400, 400)  # Başlangıç pozisyonuna git
     time.sleep(1)
-    pyautogui.dragTo(900, 900, random.uniform(0.7, 2.1), button="left")  # Base'e sürükle
+    dragTo(900, 900, duration=random.uniform(0.7, 2.1), button="left")  # Base'e sürükle
     time.sleep(1)
 
     # SAVAŞ MAKİNESİ
-    pyautogui.click(600, 1000)  # Savaş makinesi butonuna tıkla
-    pyautogui.click(1250 + random.randint(3, 7), 400 + random.randint(3, 7))  # Rastgele konuma yerleştir
+    click(600, 1000)  # Savaş makinesi butonuna tıkla
+    click(1250 + random.randint(3, 7), 400 + random.randint(3, 7))  # Rastgele konuma yerleştir
     time.sleep(random.uniform(0.5, 0.8))
     time.sleep(random.uniform(0.7, 1.3))
 
     # KRAL
-    pyautogui.click(737, 1000)  # Kral butonuna tıkla
-    pyautogui.click(950 + random.randint(3, 7), 160 + random.randint(3, 7))  # Rastgele konuma yerleştir
+    click(737, 1000)  # Kral butonuna tıkla
+    click(950 + random.randint(3, 7), 160 + random.randint(3, 7))  # Rastgele konuma yerleştir
     time.sleep(random.uniform(0.7, 1.3))
     
     # KRALİÇE
-    pyautogui.click(830, 1000)  # Kraliçe butonuna tıkla
-    pyautogui.click(1570 + random.randint(3, 7), 600 + random.randint(3, 7))  # Rastgele konuma yerleştir
+    click(830, 1000)  # Kraliçe butonuna tıkla
+    click(1570 + random.randint(3, 7), 600 + random.randint(3, 7))  # Rastgele konuma yerleştir
     time.sleep(random.uniform(0.7, 1.3))
 
     # E-DRAGONLAR - Sağ üst taraf boyunca yerleştir
-    pyautogui.click(470 + random.randint(3, 7), 970 + random.randint(3, 7))  # İlk E-Dragon
+    click(470 + random.randint(3, 7), 970 + random.randint(3, 7))  # İlk E-Dragon
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(779 + random.randint(3, 7), 120 + random.randint(3, 7))  # İkinci E-Dragon
+    click(779 + random.randint(3, 7), 120 + random.randint(3, 7))  # İkinci E-Dragon
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(877 + random.randint(3, 7), 198 + random.randint(3, 7))  # Üçüncü E-Dragon
+    click(877 + random.randint(3, 7), 198 + random.randint(3, 7))  # Üçüncü E-Dragon
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(987 + random.randint(3, 7), 270 + random.randint(3, 7))  # Dördüncü E-Dragon
+    click(987 + random.randint(3, 7), 270 + random.randint(3, 7))  # Dördüncü E-Dragon
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(1083 + random.randint(3, 7), 338 + random.randint(3, 7))  # Beşinci E-Dragon
+    click(1083 + random.randint(3, 7), 338 + random.randint(3, 7))  # Beşinci E-Dragon
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(1181 + random.randint(3, 7), 418 + random.randint(3, 7))  # Altıncı E-Dragon
+    click(1181 + random.randint(3, 7), 418 + random.randint(3, 7))  # Altıncı E-Dragon
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(1287 + random.randint(3, 7), 488 + random.randint(3, 7))  # Yedinci E-Dragon
+    click(1287 + random.randint(3, 7), 488 + random.randint(3, 7))  # Yedinci E-Dragon
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(1379 + random.randint(3, 7), 562 + random.randint(3, 7))  # Sekizinci E-Dragon
+    click(1379 + random.randint(3, 7), 562 + random.randint(3, 7))  # Sekizinci E-Dragon
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(1483 + random.randint(3, 7), 642 + random.randint(3, 7))  # Dokuzuncu E-Dragon
+    click(1483 + random.randint(3, 7), 642 + random.randint(3, 7))  # Dokuzuncu E-Dragon
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(1567 + random.randint(3, 7), 706 + random.randint(3, 7))  # Onuncu E-Dragon
+    click(1567 + random.randint(3, 7), 706 + random.randint(3, 7))  # Onuncu E-Dragon
     time.sleep(random.uniform(0.5, 0.8))
     time.sleep(random.uniform(0.7, 1.3))
 
     # MUHAFIZ
-    pyautogui.click(970, 1000)  # Muhafız butonuna tıkla
-    pyautogui.click(1120 + random.randint(3, 7), 380 + random.randint(3, 7))  # Rastgele konuma yerleştir
+    click(970, 1000)  # Muhafız butonuna tıkla
+    click(1120 + random.randint(3, 7), 380 + random.randint(3, 7))  # Rastgele konuma yerleştir
     time.sleep(random.uniform(0.5, 0.8))
 
     # BALONLAR
-    pyautogui.click(340, 970)  # Balon butonuna tıkla
-    pyautogui.click(1028 + random.randint(3, 7), 294 + random.randint(3, 7))  # İlk balon
-    pyautogui.click(1274 + random.randint(3, 7), 476 + random.randint(3, 7))  # İkinci balon
+    click(340, 970)  # Balon butonuna tıkla
+    click(1028 + random.randint(3, 7), 294 + random.randint(3, 7))  # İlk balon
+    click(1274 + random.randint(3, 7), 476 + random.randint(3, 7))  # İkinci balon
     time.sleep(random.uniform(0.5, 0.8))
     time.sleep(random.uniform(1, 2))
 
     # RAGE 1 - İlk Rage büyüsü
-    pyautogui.click(1210, 1000)  # Rage büyüsü butonuna tıkla
-    pyautogui.click(820 + random.randint(20, 40), 398 + random.randint(20, 40))  # İlk Rage
+    click(1210, 1000)  # Rage büyüsü butonuna tıkla
+    click(820 + random.randint(20, 40), 398 + random.randint(20, 40))  # İlk Rage
     time.sleep(random.uniform(0.5, 0.8))
-    pyautogui.click(1008 + random.randint(20, 40), 558 + random.randint(3, 40))  # İkinci Rage
+    click(1008 + random.randint(20, 40), 558 + random.randint(3, 40))  # İkinci Rage
     time.sleep(random.uniform(0.5, 0.8))
-    pyautogui.click(1232 + random.randint(20, 40), 762 + random.randint(20, 40))  # Üçüncü Rage
+    click(1232 + random.randint(20, 40), 762 + random.randint(20, 40))  # Üçüncü Rage
     time.sleep(random.uniform(2, 4))
 
     # MUHAFIZ YETENEĞİ
-    pyautogui.click(970, 1000)  # Muhafız yeteneğini tetikle
+    click(970, 1000)  # Muhafız yeteneğini tetikle
     time.sleep(random.uniform(4, 6))
 
     # RAGE 2 - İkinci Rage büyüsü
-    pyautogui.click(1210, 1000)  # Rage büyüsü butonuna tıkla
-    pyautogui.click(748 + random.randint(20, 40), 590 + random.randint(20, 40))  # Dördüncü Rage
+    click(1210, 1000)  # Rage büyüsü butonuna tıkla
+    click(748 + random.randint(20, 40), 590 + random.randint(20, 40))  # Dördüncü Rage
     time.sleep(random.uniform(0.5, 0.8))
-    pyautogui.click(964 + random.randint(20, 40), 758 + random.randint(20, 40))  # Beşinci Rage
+    click(964 + random.randint(20, 40), 758 + random.randint(20, 40))  # Beşinci Rage
 
     # ZAP - Zap büyüsü
-    pyautogui.click(1100, 1000)  # Zap büyüsü butonuna tıkla
-    pyautogui.click(700 + random.randint(20, 50), 700 + random.randint(20, 50))  # Base ortasına Zap
+    click(1100, 1000)  # Zap büyüsü butonuna tıkla
+    click(700 + random.randint(20, 50), 700 + random.randint(20, 50))  # Base ortasına Zap
     time.sleep(random.randint(35, 45))  # Saldırının tamamlanmasını bekle
 
 
 def e_drags_top_left():
     # Sol üst köşeden saldırı stratejisi
     time.sleep(1)
-    pyautogui.moveTo(650, 170)  # Başlangıç pozisyonuna git
+    moveTo(650, 170)  # Başlangıç pozisyonuna git
     time.sleep(1)
-    pyautogui.dragTo(1000, 450, random.uniform(0.7, 2.1), button="left")  # Base'e sürükle
+    dragTo(1000, 450, duration=random.uniform(0.7, 2.1), button="left")  # Base'e sürükle
     time.sleep(1)
 
     # SAVAŞ MAKİNESİ
-    pyautogui.click(600, 1000)  # Savaş makinesi butonuna tıkla
-    pyautogui.click(685 + random.randint(3, 7), 340 + random.randint(3, 7))  # Rastgele konuma yerleştir
+    click(600, 1000)  # Savaş makinesi butonuna tıkla
+    click(685 + random.randint(3, 7), 340 + random.randint(3, 7))  # Rastgele konuma yerleştir
     time.sleep(random.uniform(0.5, 0.8))
     time.sleep(random.uniform(0.7, 1.3))
 
     # KRAL
-    pyautogui.click(737, 1000)  # Kral butonuna tıkla
-    pyautogui.click(399 + random.randint(3, 7), 532 + random.randint(3, 7))  # Rastgele konuma yerleştir
+    click(737, 1000)  # Kral butonuna tıkla
+    click(399 + random.randint(3, 7), 532 + random.randint(3, 7))  # Rastgele konuma yerleştir
     time.sleep(random.uniform(0.7, 1.3))
     
     # KRALİÇE
-    pyautogui.click(830, 1000)  # Kraliçe butonuna tıkla
-    pyautogui.click(937 + random.randint(3, 7), 158 + random.randint(3, 7))  # Rastgele konuma yerleştir
+    click(830, 1000)  # Kraliçe butonuna tıkla
+    click(937 + random.randint(3, 7), 158 + random.randint(3, 7))  # Rastgele konuma yerleştir
     time.sleep(random.uniform(0.7, 1.3))
 
     # E-DRAGONLAR - Sol üst taraf boyunca yerleştir
-    pyautogui.click(470 + random.randint(3, 7), 970 + random.randint(3, 7))  # İlk E-Dragon
+    click(470 + random.randint(3, 7), 970 + random.randint(3, 7))  # İlk E-Dragon
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(250 + random.randint(3, 7), 640 + random.randint(3, 7))  # İkinci E-Dragon
+    click(250 + random.randint(3, 7), 640 + random.randint(3, 7))  # İkinci E-Dragon
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(375 + random.randint(3, 7), 550 + random.randint(3, 7))  # Üçüncü E-Dragon
+    click(375 + random.randint(3, 7), 550 + random.randint(3, 7))  # Üçüncü E-Dragon
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(450 + random.randint(3, 7), 520 + random.randint(3, 7))  # Dördüncü E-Dragon
+    click(450 + random.randint(3, 7), 520 + random.randint(3, 7))  # Dördüncü E-Dragon
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(540 + random.randint(3, 7), 450 + random.randint(3, 7))  # Beşinci E-Dragon
+    click(540 + random.randint(3, 7), 450 + random.randint(3, 7))  # Beşinci E-Dragon
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(625 + random.randint(3, 7), 370 + random.randint(3, 7))  # Altıncı E-Dragon
+    click(625 + random.randint(3, 7), 370 + random.randint(3, 7))  # Altıncı E-Dragon
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(730 + random.randint(3, 7), 310 + random.randint(3, 7))  # Yedinci E-Dragon
+    click(730 + random.randint(3, 7), 310 + random.randint(3, 7))  # Yedinci E-Dragon
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(840 + random.randint(3, 7), 230 + random.randint(3, 7))  # Sekizinci E-Dragon
+    click(840 + random.randint(3, 7), 230 + random.randint(3, 7))  # Sekizinci E-Dragon
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(930 + random.randint(3, 7), 165 + random.randint(3, 7))  # Dokuzuncu E-Dragon
+    click(930 + random.randint(3, 7), 165 + random.randint(3, 7))  # Dokuzuncu E-Dragon
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(985 + random.randint(3, 7), 105 + random.randint(3, 7))  # Onuncu E-Dragon
+    click(985 + random.randint(3, 7), 105 + random.randint(3, 7))  # Onuncu E-Dragon
     time.sleep(random.uniform(0.5, 0.8))
     time.sleep(random.uniform(0.7, 1.3))
 
     # MUHAFIZ
-    pyautogui.click(970, 1000)  # Muhafız butonuna tıkla
-    pyautogui.click(700 + random.randint(3, 7), 325 + random.randint(3, 7))  # Rastgele konuma yerleştir
+    click(970, 1000)  # Muhafız butonuna tıkla
+    click(700 + random.randint(3, 7), 325 + random.randint(3, 7))  # Rastgele konuma yerleştir
     time.sleep(random.uniform(0.5, 0.8))
 
     # BALONLAR
-    pyautogui.click(340, 970)  # Balon butonuna tıkla
-    pyautogui.click(770 + random.randint(3, 7), 270 + random.randint(3, 7))  # İlk balon
-    pyautogui.click(587 + random.randint(3, 7), 408 + random.randint(3, 7))  # İkinci balon
+    click(340, 970)  # Balon butonuna tıkla
+    click(770 + random.randint(3, 7), 270 + random.randint(3, 7))  # İlk balon
+    click(587 + random.randint(3, 7), 408 + random.randint(3, 7))  # İkinci balon
     time.sleep(random.uniform(0.5, 0.8))
     time.sleep(random.uniform(1, 2))
 
     # RAGE 1 - İlk Rage büyüsü
-    pyautogui.click(1210, 1000)  # Rage büyüsü butonuna tıkla
-    pyautogui.click(557 + random.randint(20, 40), 622 + random.randint(20, 40))  # İlk Rage
+    click(1210, 1000)  # Rage büyüsü butonuna tıkla
+    click(557 + random.randint(20, 40), 622 + random.randint(20, 40))  # İlk Rage
     time.sleep(random.uniform(0.5, 0.8))
-    pyautogui.click(917 + random.randint(20, 40), 490 + random.randint(3, 40))  # İkinci Rage
+    click(917 + random.randint(20, 40), 490 + random.randint(3, 40))  # İkinci Rage
     time.sleep(random.uniform(0.5, 0.8))
-    pyautogui.click(1057 + random.randint(20, 40), 310 + random.randint(20, 40))  # Üçüncü Rage
+    click(1057 + random.randint(20, 40), 310 + random.randint(20, 40))  # Üçüncü Rage
     time.sleep(random.uniform(2, 4))
 
     # MUHAFIZ YETENEĞİ
-    pyautogui.click(970, 1000)  # Muhafız yeteneğini tetikle
+    click(970, 1000)  # Muhafız yeteneğini tetikle
     time.sleep(random.uniform(2, 4))
 
     # RAGE 2 - İkinci Rage büyüsü
-    pyautogui.click(1210, 1000)  # Rage büyüsü butonuna tıkla
-    pyautogui.click(1101 + random.randint(20, 40), 432 + random.randint(20, 40))  # Dördüncü Rage
+    click(1210, 1000)  # Rage büyüsü butonuna tıkla
+    click(1101 + random.randint(20, 40), 432 + random.randint(20, 40))  # Dördüncü Rage
     time.sleep(random.uniform(0.5, 0.8))
-    pyautogui.click(867 + random.randint(20, 40), 596 + random.randint(20, 40))  # Beşinci Rage
+    click(867 + random.randint(20, 40), 596 + random.randint(20, 40))  # Beşinci Rage
     time.sleep(random.uniform(1, 3))
 
     # ZAP - Zap büyüsü
-    pyautogui.click(1100, 1000)  # Zap büyüsü butonuna tıkla
-    pyautogui.click(893 + random.randint(20, 50), 524 + random.randint(20, 50))  # Base ortasına Zap
+    click(1100, 1000)  # Zap büyüsü butonuna tıkla
+    click(893 + random.randint(20, 50), 524 + random.randint(20, 50))  # Base ortasına Zap
     time.sleep(random.randint(35, 45))  # Saldırının tamamlanmasını bekle
 
 
 def e_drags_bottom_left():
     time.sleep(1)
-    pyautogui.moveTo(460, 790)
+    moveTo(460, 790)
     time.sleep(1)
-    pyautogui.dragTo(1200, 500, random.uniform(0.7, 2.1), button="left")
+    dragTo(1200, 500, duration=random.uniform(0.7, 2.1), button="left")
     time.sleep(1)
 
     # WAR MACHINE
-    pyautogui.click(600, 1000)
-    pyautogui.click(655 + random.randint(3, 7), 636 + random.randint(3, 7))
+    click(600, 1000)
+    click(655 + random.randint(3, 7), 636 + random.randint(3, 7))
     time.sleep(random.uniform(0.5, 0.8))
     time.sleep(random.uniform(0.7, 1.3))
 
     # KING
-    pyautogui.click(737, 1000)
-    pyautogui.click(430 + random.randint(3, 7), 285 + random.randint(3, 7))
+    click(737, 1000)
+    click(430 + random.randint(3, 7), 285 + random.randint(3, 7))
     time.sleep(random.uniform(0.7, 1.3))
     # QUEEN
-    pyautogui.click(830, 1000)
-    pyautogui.click(1117 + random.randint(3, 7), 776 + random.randint(3, 7))
+    click(830, 1000)
+    click(1117 + random.randint(3, 7), 776 + random.randint(3, 7))
     time.sleep(random.uniform(0.7, 1.3))
 
-    pyautogui.click(470 + random.randint(3, 7), 970 + random.randint(3, 7))
+    click(470 + random.randint(3, 7), 970 + random.randint(3, 7))
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(330 + random.randint(3, 7), 290 + random.randint(3, 7))
+    click(330 + random.randint(3, 7), 290 + random.randint(3, 7))
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(380 + random.randint(3, 7), 335 + random.randint(3, 7))
+    click(380 + random.randint(3, 7), 335 + random.randint(3, 7))
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(455 + random.randint(3, 7), 400 + random.randint(3, 7))
+    click(455 + random.randint(3, 7), 400 + random.randint(3, 7))
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(505 + random.randint(3, 7), 445 + random.randint(3, 7))
+    click(505 + random.randint(3, 7), 445 + random.randint(3, 7))
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(600 + random.randint(3, 7), 490 + random.randint(3, 7))
+    click(600 + random.randint(3, 7), 490 + random.randint(3, 7))
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(690 + random.randint(3, 7), 575 + random.randint(3, 7))
+    click(690 + random.randint(3, 7), 575 + random.randint(3, 7))
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(780 + random.randint(3, 7), 630 + random.randint(3, 7))
+    click(780 + random.randint(3, 7), 630 + random.randint(3, 7))
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(870 + random.randint(3, 7), 705 + random.randint(3, 7))
+    click(870 + random.randint(3, 7), 705 + random.randint(3, 7))
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(950 + random.randint(3, 7), 750 + random.randint(3, 7))
+    click(950 + random.randint(3, 7), 750 + random.randint(3, 7))
     time.sleep(random.uniform(0.5, 0.8))
     time.sleep(random.uniform(0.7, 1.3))
 
     # WARDEN
-    pyautogui.click(970, 1000)
-    pyautogui.click(771 + random.randint(3, 7), 530 + random.randint(3, 7))
+    click(970, 1000)
+    click(771 + random.randint(3, 7), 530 + random.randint(3, 7))
     time.sleep(random.uniform(0.5, 0.8))
 
     # LOONS
-    pyautogui.click(340, 970)
-    pyautogui.click(635 + random.randint(3, 7), 422 + random.randint(3, 7))
-    pyautogui.click(879 + random.randint(3, 7), 606 + random.randint(3, 7))
+    click(340, 970)
+    click(635 + random.randint(3, 7), 422 + random.randint(3, 7))
+    click(879 + random.randint(3, 7), 606 + random.randint(3, 7))
     time.sleep(random.uniform(0.5, 0.8))
     time.sleep(random.uniform(1, 2))
 
     # RAGE 1
-    pyautogui.click(1210, 1000)
-    pyautogui.click(679 + random.randint(20, 40), 224 + random.randint(20, 40))
+    click(1210, 1000)
+    click(679 + random.randint(20, 40), 224 + random.randint(20, 40))
     time.sleep(random.uniform(0.5, 0.8))
-    pyautogui.click(913 + random.randint(20, 40), 364 + random.randint(3, 40))
+    click(913 + random.randint(20, 40), 364 + random.randint(3, 40))
     time.sleep(random.uniform(0.5, 0.8))
-    pyautogui.click(1125 + random.randint(20, 40), 580 + random.randint(20, 40))
+    click(1125 + random.randint(20, 40), 580 + random.randint(20, 40))
     time.sleep(random.uniform(2, 4))
 
     # WARDEN ABILITY
-    pyautogui.click(970, 1000)
+    click(970, 1000)
     time.sleep(random.uniform(2, 4))
 
     # RAGE 2
-    pyautogui.click(1210, 1000)
-    pyautogui.click(1185 + random.randint(20, 40), 392 + random.randint(20, 40))
+    click(1210, 1000)
+    click(1185 + random.randint(20, 40), 392 + random.randint(20, 40))
     time.sleep(random.uniform(0.5, 0.8))
-    pyautogui.click(901 + random.randint(20, 40), 216 + random.randint(20, 40))
+    click(901 + random.randint(20, 40), 216 + random.randint(20, 40))
     time.sleep(random.uniform(1, 3))
 
     # ZAP
-    pyautogui.click(1100, 1000)
-    pyautogui.click(861 + random.randint(20, 50), 422 + random.randint(20, 50))
+    click(1100, 1000)
+    click(861 + random.randint(20, 50), 422 + random.randint(20, 50))
     time.sleep(random.randint(35, 45))
 
 
 def e_drags_bottom_right():
     time.sleep(1)
-    pyautogui.moveTo(1292, 740)
+    moveTo(1292, 740)
     time.sleep(1)
-    pyautogui.dragTo(1000, 450, random.uniform(0.7, 2.1), button="left")
+    dragTo(1000, 450, duration=random.uniform(0.7, 2.1), button="left")
     time.sleep(1)
 
     # WAR MACHINE
-    pyautogui.click(600, 1000)
-    pyautogui.click(1355 + random.randint(3, 7), 526 + random.randint(3, 7))
+    click(600, 1000)
+    click(1355 + random.randint(3, 7), 526 + random.randint(3, 7))
     time.sleep(random.uniform(0.5, 0.8))
     time.sleep(random.uniform(0.7, 1.3))
 
     # KING
-    pyautogui.click(737, 1000)
-    pyautogui.click(1091 + random.randint(3, 7), 748 + random.randint(3, 7))
+    click(737, 1000)
+    click(1091 + random.randint(3, 7), 748 + random.randint(3, 7))
     time.sleep(random.uniform(0.7, 1.3))
 
     # QUEEN
-    pyautogui.click(830, 1000)
-    pyautogui.click(1509 + random.randint(3, 7), 418 + random.randint(3, 7))
+    click(830, 1000)
+    click(1509 + random.randint(3, 7), 418 + random.randint(3, 7))
     time.sleep(random.uniform(0.7, 1.3))
 
-    pyautogui.click(470 + random.randint(3, 7), 970 + random.randint(3, 7))
+    click(470 + random.randint(3, 7), 970 + random.randint(3, 7))
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(1634 + random.randint(3, 7), 308 + random.randint(3, 7))
+    click(1634 + random.randint(3, 7), 308 + random.randint(3, 7))
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(1552 + random.randint(3, 7), 380 + random.randint(3, 7))
+    click(1552 + random.randint(3, 7), 380 + random.randint(3, 7))
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(1474 + random.randint(3, 7), 436 + random.randint(3, 7))
+    click(1474 + random.randint(3, 7), 436 + random.randint(3, 7))
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(1396 + random.randint(3, 7), 486 + random.randint(3, 7))
+    click(1396 + random.randint(3, 7), 486 + random.randint(3, 7))
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(1336 + random.randint(3, 7), 556 + random.randint(3, 7))
+    click(1336 + random.randint(3, 7), 556 + random.randint(3, 7))
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(1230 + random.randint(3, 7), 626 + random.randint(3, 7))
+    click(1230 + random.randint(3, 7), 626 + random.randint(3, 7))
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(1166 + random.randint(3, 7), 672 + random.randint(3, 7))
+    click(1166 + random.randint(3, 7), 672 + random.randint(3, 7))
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(1066 + random.randint(3, 7), 758 + random.randint(3, 7))
+    click(1066 + random.randint(3, 7), 758 + random.randint(3, 7))
     time.sleep(random.uniform(0.2, 0.4))
-    pyautogui.click(948 + random.randint(3, 7), 810 + random.randint(3, 7))
+    click(948 + random.randint(3, 7), 810 + random.randint(3, 7))
     time.sleep(random.uniform(0.5, 0.8))
     time.sleep(random.uniform(0.7, 1.3))
 
     # WARDEN
-    pyautogui.click(970, 1000)
-    pyautogui.click(1315 + random.randint(3, 7), 560 + random.randint(3, 7))
+    click(970, 1000)
+    click(1315 + random.randint(3, 7), 560 + random.randint(3, 7))
     time.sleep(random.uniform(0.5, 0.8))
 
     # LOONS
-    pyautogui.click(340, 970)
-    pyautogui.click(1221 + random.randint(3, 7), 638 + random.randint(3, 7))
-    pyautogui.click(1423 + random.randint(3, 7), 470 + random.randint(3, 7))
+    click(340, 970)
+    click(1221 + random.randint(3, 7), 638 + random.randint(3, 7))
+    click(1423 + random.randint(3, 7), 470 + random.randint(3, 7))
     time.sleep(random.uniform(0.5, 0.8))
     time.sleep(random.uniform(1, 2))
 
     # RAGE 1
-    pyautogui.click(1210, 1000)
-    pyautogui.click(1359 + random.randint(20, 40), 310 + random.randint(20, 40))
+    click(1210, 1000)
+    click(1359 + random.randint(20, 40), 310 + random.randint(20, 40))
     time.sleep(random.uniform(0.5, 0.8))
-    pyautogui.click(1135 + random.randint(20, 40), 450 + random.randint(3, 40))
+    click(1135 + random.randint(20, 40), 450 + random.randint(3, 40))
     time.sleep(random.uniform(0.5, 0.8))
-    pyautogui.click(943 + random.randint(20, 40), 576 + random.randint(20, 40))
+    click(943 + random.randint(20, 40), 576 + random.randint(20, 40))
     time.sleep(random.uniform(2, 4))
 
     # WARDEN ABILITY
-    pyautogui.click(970, 1000)
+    click(970, 1000)
     time.sleep(random.uniform(2, 4))
 
     # RAGE 2
-    pyautogui.click(1210, 1000)
-    pyautogui.click(1241 + random.randint(20, 40), 214 + random.randint(20, 40))
+    click(1210, 1000)
+    click(1241 + random.randint(20, 40), 214 + random.randint(20, 40))
     time.sleep(random.uniform(0.5, 0.8))
-    pyautogui.click(909 + random.randint(20, 40), 416 + random.randint(20, 40))
+    click(909 + random.randint(20, 40), 416 + random.randint(20, 40))
     time.sleep(random.uniform(1, 3))
 
     # ZAP
-    pyautogui.click(1100, 1000)
-    pyautogui.click(1029 + random.randint(20, 50), 386 + random.randint(20, 50))
+    click(1100, 1000)
+    click(1029 + random.randint(20, 50), 386 + random.randint(20, 50))
     time.sleep(random.randint(35, 45))
 
 
@@ -374,42 +375,42 @@ def e_drags_bottom_right():
 def dragons_top_right():
     # Sağ üst köşeden Dragon saldırı stratejisi
     time.sleep(1)
-    pyautogui.moveTo(1400, 400)  # Başlangıç pozisyonuna git
+    moveTo(1400, 400)  # Başlangıç pozisyonuna git
     time.sleep(1)
-    pyautogui.dragTo(900, 900, random.uniform(0.7, 2.1), button="left")  # Base'e sürükle
+    dragTo(900, 900, duration=random.uniform(0.7, 2.1), button="left")  # Base'e sürükle
     time.sleep(1)
 
     # DRAGONLAR - Sağ üst taraf boyunca yerleştir
-    pyautogui.click(354, 1004)  # Dragon butonuna tıkla
+    click(354, 1004)  # Dragon butonuna tıkla
     time.sleep(0.5)
-    pyautogui.click(779 + random.randint(3, 7), 120 + random.randint(3, 7))  # İlk Dragon
-    pyautogui.click(877 + random.randint(3, 7), 198 + random.randint(3, 7))  # İkinci Dragon
-    pyautogui.click(939 + random.randint(3, 7), 179 + random.randint(3, 7))  # Üçüncü Dragon
-    pyautogui.click(987 + random.randint(3, 7), 270 + random.randint(3, 7))  # Dördüncü Dragon
-    pyautogui.click(1083 + random.randint(3, 7), 338 + random.randint(3, 7))  # Beşinci Dragon
-    pyautogui.click(1181 + random.randint(3, 7), 418 + random.randint(3, 7))  # Altıncı Dragon
-    pyautogui.click(1287 + random.randint(3, 7), 488 + random.randint(3, 7))  # Yedinci Dragon
-    pyautogui.click(1379 + random.randint(3, 7), 562 + random.randint(3, 7))  # Sekizinci Dragon
-    pyautogui.click(1483 + random.randint(3, 7), 642 + random.randint(3, 7))  # Dokuzuncu Dragon
-    pyautogui.click(1567 + random.randint(3, 7), 706 + random.randint(3, 7))  # Onuncu Dragon
+    click(779 + random.randint(3, 7), 120 + random.randint(3, 7))  # İlk Dragon
+    click(877 + random.randint(3, 7), 198 + random.randint(3, 7))  # İkinci Dragon
+    click(939 + random.randint(3, 7), 179 + random.randint(3, 7))  # Üçüncü Dragon
+    click(987 + random.randint(3, 7), 270 + random.randint(3, 7))  # Dördüncü Dragon
+    click(1083 + random.randint(3, 7), 338 + random.randint(3, 7))  # Beşinci Dragon
+    click(1181 + random.randint(3, 7), 418 + random.randint(3, 7))  # Altıncı Dragon
+    click(1287 + random.randint(3, 7), 488 + random.randint(3, 7))  # Yedinci Dragon
+    click(1379 + random.randint(3, 7), 562 + random.randint(3, 7))  # Sekizinci Dragon
+    click(1483 + random.randint(3, 7), 642 + random.randint(3, 7))  # Dokuzuncu Dragon
+    click(1567 + random.randint(3, 7), 706 + random.randint(3, 7))  # Onuncu Dragon
     time.sleep(random.randint(1, 3))
 
     # KRAL
-    pyautogui.click(463, 987)  # Kral butonuna tıkla
-    pyautogui.click(1181 + random.randint(3, 7), 418 + random.randint(3, 7))  # Rastgele konuma yerleştir
+    click(463, 987)  # Kral butonuna tıkla
+    click(1181 + random.randint(3, 7), 418 + random.randint(3, 7))  # Rastgele konuma yerleştir
     time.sleep(random.randint(6, 9))
 
     # RAGE - Rage büyüsü
-    pyautogui.click(615, 991)  # Rage büyüsü butonuna tıkla
-    pyautogui.click(886 + random.randint(20, 40), 408 + random.randint(20, 40))  # İlk Rage
+    click(615, 991)  # Rage büyüsü butonuna tıkla
+    click(886 + random.randint(20, 40), 408 + random.randint(20, 40))  # İlk Rage
     time.sleep(random.uniform(0.5, 0.8))
-    pyautogui.click(1008 + random.randint(20, 40), 514 + random.randint(3, 40))  # İkinci Rage
+    click(1008 + random.randint(20, 40), 514 + random.randint(3, 40))  # İkinci Rage
     time.sleep(random.uniform(0.5, 0.8))
-    pyautogui.click(1204 + random.randint(20, 40), 632 + random.randint(20, 40))  # Üçüncü Rage
+    click(1204 + random.randint(20, 40), 632 + random.randint(20, 40))  # Üçüncü Rage
     time.sleep(random.uniform(10, 15))
 
     # KRAL YETENEĞİ
-    pyautogui.click(463, 987)  # Kral yeteneğini tetikle
+    click(463, 987)  # Kral yeteneğini tetikle
 
     time.sleep(random.randint(35, 45))  # Saldırının tamamlanmasını bekle
 
@@ -417,42 +418,42 @@ def dragons_top_right():
 def dragons_top_left():
     # Sol üst köşeden Dragon saldırı stratejisi
     time.sleep(1)
-    pyautogui.moveTo(650, 170)  # Başlangıç pozisyonuna git
+    moveTo(650, 170)  # Başlangıç pozisyonuna git
     time.sleep(1)
-    pyautogui.dragTo(1000, 450, random.uniform(0.7, 2.1), button="left")  # Base'e sürükle
+    dragTo(1000, 450, duration=random.uniform(0.7, 2.1), button="left")  # Base'e sürükle
     time.sleep(1)
 
     # DRAGONLAR - Sol üst taraf boyunca yerleştir
-    pyautogui.click(354, 1004)  # Dragon butonuna tıkla
+    click(354, 1004)  # Dragon butonuna tıkla
     time.sleep(0.5)
-    pyautogui.click(250 + random.randint(3, 7), 640 + random.randint(3, 7))  # İlk Dragon
-    pyautogui.click(375 + random.randint(3, 7), 550 + random.randint(3, 7))  # İkinci Dragon
-    pyautogui.click(450 + random.randint(3, 7), 520 + random.randint(3, 7))  # Üçüncü Dragon
-    pyautogui.click(540 + random.randint(3, 7), 450 + random.randint(3, 7))  # Dördüncü Dragon
-    pyautogui.click(567 + random.randint(3, 7), 489 + random.randint(3, 7))  # Beşinci Dragon
-    pyautogui.click(625 + random.randint(3, 7), 370 + random.randint(3, 7))  # Altıncı Dragon
-    pyautogui.click(730 + random.randint(3, 7), 310 + random.randint(3, 7))  # Yedinci Dragon
-    pyautogui.click(840 + random.randint(3, 7), 230 + random.randint(3, 7))  # Sekizinci Dragon
-    pyautogui.click(930 + random.randint(3, 7), 165 + random.randint(3, 7))  # Dokuzuncu Dragon
-    pyautogui.click(985 + random.randint(3, 7), 105 + random.randint(3, 7))  # Onuncu Dragon
+    click(250 + random.randint(3, 7), 640 + random.randint(3, 7))  # İlk Dragon
+    click(375 + random.randint(3, 7), 550 + random.randint(3, 7))  # İkinci Dragon
+    click(450 + random.randint(3, 7), 520 + random.randint(3, 7))  # Üçüncü Dragon
+    click(540 + random.randint(3, 7), 450 + random.randint(3, 7))  # Dördüncü Dragon
+    click(567 + random.randint(3, 7), 489 + random.randint(3, 7))  # Beşinci Dragon
+    click(625 + random.randint(3, 7), 370 + random.randint(3, 7))  # Altıncı Dragon
+    click(730 + random.randint(3, 7), 310 + random.randint(3, 7))  # Yedinci Dragon
+    click(840 + random.randint(3, 7), 230 + random.randint(3, 7))  # Sekizinci Dragon
+    click(930 + random.randint(3, 7), 165 + random.randint(3, 7))  # Dokuzuncu Dragon
+    click(985 + random.randint(3, 7), 105 + random.randint(3, 7))  # Onuncu Dragon
     time.sleep(random.randint(1, 3))
 
     # KRAL
-    pyautogui.click(463, 987)  # Kral butonuna tıkla
-    pyautogui.click(625 + random.randint(3, 7), 370 + random.randint(3, 7))  # Rastgele konuma yerleştir
+    click(463, 987)  # Kral butonuna tıkla
+    click(625 + random.randint(3, 7), 370 + random.randint(3, 7))  # Rastgele konuma yerleştir
     time.sleep(random.randint(6, 9))
 
     # RAGE - Rage büyüsü
-    pyautogui.click(615, 991)  # Rage büyüsü butonuna tıkla
-    pyautogui.click(746 + random.randint(20, 40), 684 + random.randint(20, 40))  # İlk Rage
+    click(615, 991)  # Rage büyüsü butonuna tıkla
+    click(746 + random.randint(20, 40), 684 + random.randint(20, 40))  # İlk Rage
     time.sleep(random.uniform(0.5, 0.8))
-    pyautogui.click(916 + random.randint(20, 40), 558 + random.randint(3, 40))  # İkinci Rage
+    click(916 + random.randint(20, 40), 558 + random.randint(3, 40))  # İkinci Rage
     time.sleep(random.uniform(0.5, 0.8))
-    pyautogui.click(1066 + random.randint(20, 40), 442 + random.randint(20, 40))  # Üçüncü Rage
+    click(1066 + random.randint(20, 40), 442 + random.randint(20, 40))  # Üçüncü Rage
     time.sleep(random.uniform(10, 15))
 
     # KRAL YETENEĞİ
-    pyautogui.click(463, 987)  # Kral yeteneğini tetikle
+    click(463, 987)  # Kral yeteneğini tetikle
 
     time.sleep(random.randint(35, 45))  # Saldırının tamamlanmasını bekle
 
@@ -460,42 +461,42 @@ def dragons_top_left():
 def dragons_bottom_left():
     # Sol alt köşeden Dragon saldırı stratejisi
     time.sleep(1)
-    pyautogui.moveTo(460, 790)  # Başlangıç pozisyonuna git
+    moveTo(460, 790)  # Başlangıç pozisyonuna git
     time.sleep(1)
-    pyautogui.dragTo(1200, 500, random.uniform(0.7, 2.1), button="left")  # Base'e sürükle
+    dragTo(1200, 500, duration=random.uniform(0.7, 2.1), button="left")  # Base'e sürükle
     time.sleep(1)
 
     # DRAGONLAR - Sol alt taraf boyunca yerleştir
-    pyautogui.click(354, 1004)  # Dragon butonuna tıkla
+    click(354, 1004)  # Dragon butonuna tıkla
     time.sleep(0.5)
-    pyautogui.click(330 + random.randint(3, 7), 290 + random.randint(3, 7))  # İlk Dragon
-    pyautogui.click(380 + random.randint(3, 7), 335 + random.randint(3, 7))  # İkinci Dragon
-    pyautogui.click(455 + random.randint(3, 7), 400 + random.randint(3, 7))  # Üçüncü Dragon
-    pyautogui.click(505 + random.randint(3, 7), 445 + random.randint(3, 7))  # Dördüncü Dragon
-    pyautogui.click(600 + random.randint(3, 7), 490 + random.randint(3, 7))  # Beşinci Dragon
-    pyautogui.click(690 + random.randint(3, 7), 575 + random.randint(3, 7))  # Altıncı Dragon
-    pyautogui.click(737 + random.randint(3, 7), 678 + random.randint(3, 7))  # Yedinci Dragon
-    pyautogui.click(780 + random.randint(3, 7), 630 + random.randint(3, 7))  # Sekizinci Dragon
-    pyautogui.click(870 + random.randint(3, 7), 705 + random.randint(3, 7))  # Dokuzuncu Dragon
-    pyautogui.click(950 + random.randint(3, 7), 750 + random.randint(3, 7))  # Onuncu Dragon
+    click(330 + random.randint(3, 7), 290 + random.randint(3, 7))  # İlk Dragon
+    click(380 + random.randint(3, 7), 335 + random.randint(3, 7))  # İkinci Dragon
+    click(455 + random.randint(3, 7), 400 + random.randint(3, 7))  # Üçüncü Dragon
+    click(505 + random.randint(3, 7), 445 + random.randint(3, 7))  # Dördüncü Dragon
+    click(600 + random.randint(3, 7), 490 + random.randint(3, 7))  # Beşinci Dragon
+    click(690 + random.randint(3, 7), 575 + random.randint(3, 7))  # Altıncı Dragon
+    click(737 + random.randint(3, 7), 678 + random.randint(3, 7))  # Yedinci Dragon
+    click(780 + random.randint(3, 7), 630 + random.randint(3, 7))  # Sekizinci Dragon
+    click(870 + random.randint(3, 7), 705 + random.randint(3, 7))  # Dokuzuncu Dragon
+    click(950 + random.randint(3, 7), 750 + random.randint(3, 7))  # Onuncu Dragon
     time.sleep(random.randint(1, 3))
 
     # KRAL
-    pyautogui.click(463, 987)  # Kral butonuna tıkla
-    pyautogui.click(600 + random.randint(3, 7), 490 + random.randint(3, 7))  # Rastgele konuma yerleştir
+    click(463, 987)  # Kral butonuna tıkla
+    click(600 + random.randint(3, 7), 490 + random.randint(3, 7))  # Rastgele konuma yerleştir
     time.sleep(random.randint(6, 9))
 
     # RAGE - Rage büyüsü
-    pyautogui.click(615, 991)  # Rage büyüsü butonuna tıkla
-    pyautogui.click(732 + random.randint(20, 40), 248 + random.randint(20, 40))  # İlk Rage
+    click(615, 991)  # Rage büyüsü butonuna tıkla
+    click(732 + random.randint(20, 40), 248 + random.randint(20, 40))  # İlk Rage
     time.sleep(random.uniform(0.5, 0.8))
-    pyautogui.click(916 + random.randint(20, 40), 348 + random.randint(3, 40))  # İkinci Rage
+    click(916 + random.randint(20, 40), 348 + random.randint(3, 40))  # İkinci Rage
     time.sleep(random.uniform(0.5, 0.8))
-    pyautogui.click(1032 + random.randint(20, 40), 464 + random.randint(20, 40))  # Üçüncü Rage
+    click(1032 + random.randint(20, 40), 464 + random.randint(20, 40))  # Üçüncü Rage
     time.sleep(random.uniform(10, 15))
 
     # KRAL YETENEĞİ
-    pyautogui.click(463, 987)  # Kral yeteneğini tetikle
+    click(463, 987)  # Kral yeteneğini tetikle
 
     time.sleep(random.randint(35, 45))  # Saldırının tamamlanmasını bekle
 
@@ -503,41 +504,41 @@ def dragons_bottom_left():
 def dragons_bottom_right():
     # Sağ alt köşeden Dragon saldırı stratejisi
     time.sleep(1)
-    pyautogui.moveTo(1292, 740)  # Başlangıç pozisyonuna git
+    moveTo(1292, 740)  # Başlangıç pozisyonuna git
     time.sleep(1)
-    pyautogui.dragTo(1000, 450, random.uniform(0.7, 2.1), button="left")  # Base'e sürükle
+    dragTo(1000, 450, duration=random.uniform(0.7, 2.1), button="left")  # Base'e sürükle
     time.sleep(1)
 
     # DRAGONLAR - Sağ alt taraf boyunca yerleştir
-    pyautogui.click(354, 1004)  # Dragon butonuna tıkla
+    click(354, 1004)  # Dragon butonuna tıkla
     time.sleep(0.5)
-    pyautogui.click(1634 + random.randint(3, 7), 308 + random.randint(3, 7))  # İlk Dragon
-    pyautogui.click(1552 + random.randint(3, 7), 380 + random.randint(3, 7))  # İkinci Dragon
-    pyautogui.click(1474 + random.randint(3, 7), 436 + random.randint(3, 7))  # Üçüncü Dragon
-    pyautogui.click(1396 + random.randint(3, 7), 486 + random.randint(3, 7))  # Dördüncü Dragon
-    pyautogui.click(1336 + random.randint(3, 7), 556 + random.randint(3, 7))  # Beşinci Dragon
-    pyautogui.click(1261 + random.randint(3, 7), 620 + random.randint(3, 7))  # Altıncı Dragon
-    pyautogui.click(1230 + random.randint(3, 7), 626 + random.randint(3, 7))  # Yedinci Dragon
-    pyautogui.click(1166 + random.randint(3, 7), 672 + random.randint(3, 7))  # Sekizinci Dragon
-    pyautogui.click(1066 + random.randint(3, 7), 758 + random.randint(3, 7))  # Dokuzuncu Dragon
-    pyautogui.click(948 + random.randint(3, 7), 810 + random.randint(3, 7))  # Onuncu Dragon
+    click(1634 + random.randint(3, 7), 308 + random.randint(3, 7))  # İlk Dragon
+    click(1552 + random.randint(3, 7), 380 + random.randint(3, 7))  # İkinci Dragon
+    click(1474 + random.randint(3, 7), 436 + random.randint(3, 7))  # Üçüncü Dragon
+    click(1396 + random.randint(3, 7), 486 + random.randint(3, 7))  # Dördüncü Dragon
+    click(1336 + random.randint(3, 7), 556 + random.randint(3, 7))  # Beşinci Dragon
+    click(1261 + random.randint(3, 7), 620 + random.randint(3, 7))  # Altıncı Dragon
+    click(1230 + random.randint(3, 7), 626 + random.randint(3, 7))  # Yedinci Dragon
+    click(1166 + random.randint(3, 7), 672 + random.randint(3, 7))  # Sekizinci Dragon
+    click(1066 + random.randint(3, 7), 758 + random.randint(3, 7))  # Dokuzuncu Dragon
+    click(948 + random.randint(3, 7), 810 + random.randint(3, 7))  # Onuncu Dragon
     time.sleep(random.randint(1, 3))
     
     # KRAL
-    pyautogui.click(463, 987)  # Kral butonuna tıkla
-    pyautogui.click(1336 + random.randint(3, 7), 556 + random.randint(3, 7))  # Rastgele konuma yerleştir
+    click(463, 987)  # Kral butonuna tıkla
+    click(1336 + random.randint(3, 7), 556 + random.randint(3, 7))  # Rastgele konuma yerleştir
     time.sleep(random.randint(6, 9))
     
     # RAGE - Rage büyüsü
-    pyautogui.click(615, 991)  # Rage büyüsü butonuna tıkla
-    pyautogui.click(1236 + random.randint(20, 40), 238 + random.randint(20, 40))  # İlk Rage
+    click(615, 991)  # Rage büyüsü butonuna tıkla
+    click(1236 + random.randint(20, 40), 238 + random.randint(20, 40))  # İlk Rage
     time.sleep(random.uniform(0.5, 0.8))
-    pyautogui.click(1066 + random.randint(20, 40), 350 + random.randint(3, 40))  # İkinci Rage
+    click(1066 + random.randint(20, 40), 350 + random.randint(3, 40))  # İkinci Rage
     time.sleep(random.uniform(0.5, 0.8))
-    pyautogui.click(844 + random.randint(20, 40), 524 + random.randint(20, 40))  # Üçüncü Rage
+    click(844 + random.randint(20, 40), 524 + random.randint(20, 40))  # Üçüncü Rage
     time.sleep(random.uniform(10, 15))
     
     # KRAL YETENEĞİ
-    pyautogui.click(463, 987)  # Kral yeteneğini tetikle
+    click(463, 987)  # Kral yeteneğini tetikle
 
     time.sleep(random.randint(35, 45))  # Saldırının tamamlanmasını bekle

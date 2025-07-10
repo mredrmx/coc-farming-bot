@@ -1,6 +1,7 @@
 import time
 from used_account import get_account_choice
 from base_search import searchforbase
+from screen_utils import print_screen_info
 
 # --------------------------------------------- TR --------------------------------------------- #
 # Ana program mantığı. Burada hesap seçimi sorgulanır ve "searchforbase" fonksiyonuna aktarılır. 
@@ -17,6 +18,9 @@ from base_search import searchforbase
 
 # Kullanıcıdan hesap seçimini al
 used_account = get_account_choice()
+
+# Ekran bilgilerini göster
+print_screen_info()
 
 # Ana döngü - sürekli base arama ve saldırı
 while True:

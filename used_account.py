@@ -12,11 +12,11 @@
 
 def get_account_choice():
     # Kullanıcıdan giriş al ve boşlukları temizle
-    choice = input("Eingabe: ").strip()
+    choice = input("Hesap seçimi (1 veya 2): ").strip()
     
     # Girişin geçerli olup olmadığını kontrol et
     if choice not in ["1", "2"]:
-        print("Ungültige Eingabe! Bitte 1 oder 2.")  # Geçersiz giriş! Lütfen 1 veya 2 girin.
+        print("Geçersiz giriş! Lütfen 1 veya 2 girin.")
         return get_account_choice()  # Tekrar sor
     
     return choice  # Geçerli seçimi döndür

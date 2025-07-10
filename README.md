@@ -54,6 +54,7 @@ Hesap isimleri "MAIN" (1) ve "ALT" (2) **örnek olarak verilmiştir** ve sadece 
 * **İki monitör önerilir:**
   * Monitör 1: Clash of Clans (Google Play Oyunları Beta üzerinden)
   * Monitör 2: Diğer programları kullanmak için
+* **2. Ekran Desteği:** Bot artık 2. ekranda çalışabilir!
 * Tek monitör de çalışır – ancak bot yağma sırasında tüm girişleri bloklar
 * Windows işletim sistemi
 * [Tesseract-OCR](https://github.com/tesseract-ocr/tesseract/releases/) kurulu olmalı
@@ -86,10 +87,25 @@ pip install pyautogui opencv-python pytesseract numpy Pillow python-dotenv
 
 ### Kullanım
 
-1. `main.py` dosyasını çalıştırın
+#### **Hızlı Başlangıç:**
+1. `run.bat` dosyasını çift tıklayın
 2. Giriş olarak `1` (MAIN hesap) veya `2` (ALT hesap) seçin
 3. Bot otomatik olarak yeterli yağma içeren üs arayacak
 4. İyi bir üs bulunduğunda saldırı otomatik olarak başlayacak
+
+#### **2. Ekran Desteği:**
+1. `setup_screen.bat` dosyasını çalıştırın
+2. Ekran seçeneklerinden birini seçin:
+   - Ana Ekran (varsayılan)
+   - İkinci Ekran (1920x1080, 1366x768, 2560x1440, 3840x2160)
+   - Manuel ekran seçimi (arayüz ile)
+3. `run.bat` ile botu başlatın
+4. Bot seçilen ekranda çalışacak
+
+#### **Manuel Çalıştırma:**
+```bash
+python main.py
+```
 
 ---
 
