@@ -30,10 +30,10 @@ while counter < 30:  # 30 kez tekrarla
     click(100, 1000)  # Arama butonuna tıkla
     time.sleep(0.5)
     click(1400, 700)  # Onay butonuna tıkla
-    time.sleep(4)  # Eşleşme için bekle
+    time.sleep(8)  # Eşleşme için bekle
     
     # Zap büyüsü kullan
-    click(1100, 1000)  # Zap büyüsü butonuna tıkla
+    click(1350, 1000)  # Zap büyüsü butonuna tıkla
     # Rastgele konuma Zap bırak
     click(960 + random.randint(-150, 150), 540 + random.randint(-150, 150))
     time.sleep(random.randint(1, 2))

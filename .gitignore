@@ -17,6 +17,7 @@ __pycache__/
 # Geçici ekran görüntüleri
 C:/temp/screenshot.png
 temp/
+storage_screenshot.png
 
 # IDE dosyaları
 .vscode/
@@ -26,3 +27,38 @@ temp/
 
 # Log dosyaları
 *.log
+
+# Windows geçici dosyaları
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Python sanal ortam
+venv/
+env/
+.venv/
+.env/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Linux
+*~
+
+# Ekran görüntüleri ve geçici dosyalar
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+temp/
+tmp/

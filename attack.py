@@ -33,7 +33,7 @@ def attack_with_e_drags():
     if start_position == "top_left":
         e_drags_top_left()
     elif start_position == "top_right":
-        e_drags_top_right()
+        e_drags_top_left()
     elif start_position == "bottom_left":
         e_drags_bottom_left()
     elif start_position == "bottom_right":

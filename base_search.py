@@ -91,7 +91,7 @@ def searchforbase(user_account):
         time.sleep(2)
 
         # İşlenmiş görüntüye OCR uygula
-        result = pytesseract.image_to_string(mask_pil, timeout=1, lang='eng',
+        result = pytesseract.image_to_string(mask_pil, timeout=2, lang='eng',
                                              config='--oem 1 --psm 4 -c tessedit_char_whitelist=0123456789')
         result = result.replace('\n\n', '\n')
         loot_list = result.splitlines()
