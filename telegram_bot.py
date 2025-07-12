@@ -1,6 +1,7 @@
 import logging
 import os
 import asyncio
+import json
 from typing import Optional, List
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, CallbackQueryHandler, filters
@@ -38,6 +39,17 @@ class TelegramBotController:
         
         # Screenshot mesaj takibi için sözlük
         self.screenshot_messages: dict = {}  # {chat_id: message_id}
+        
+        # Screenshot mesaj takibi için dosya
+        self.screenshot_tracker_file = "screenshot_messages.json"
+        self.load_screenshot_messages()
+        
+        # Otomatik yenileme task'larını takip etmek için
+        self.auto_refresh_tasks = {}  # chat_id -> task mapping
+        self.auto_refresh_running = {}  # chat_id -> bool mapping
+        
+        # Bot başlangıcında eski screenshot mesajlarını temizleme işlemi yapılmaz
+        # İlk screenshot gönderildiğinde temizlik yapılacak
         
         if not self.bot_token:
             raise ValueError("TELEGRAM_BOT_TOKEN çevre değişkeni bulunamadı!")
@@ -83,7 +95,7 @@ class TelegramBotController:
         keyboard = [
             [InlineKeyboardButton(self.get_bot_button_text(), callback_data=self.get_bot_button_callback()), InlineKeyboardButton(self.get_coc_button_text(), callback_data=self.get_coc_button_callback())],
             [InlineKeyboardButton("📸 Anlık Görüntü", callback_data="screenshot")],
-            [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("👤 Hesap Seç", callback_data="account_menu")],
+            [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("🏆 Trophy Deranker", callback_data="trophy_deranker")],
             [InlineKeyboardButton("🏗️ Depo Kontrol", callback_data="check_storage")],
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
@@ -105,7 +117,7 @@ class TelegramBotController:
             keyboard = [
                 [InlineKeyboardButton(self.get_bot_button_text(), callback_data=self.get_bot_button_callback()), InlineKeyboardButton(self.get_coc_button_text(), callback_data=self.get_coc_button_callback())],
                 [InlineKeyboardButton("📸 Anlık Görüntü", callback_data="screenshot")],
-                [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("👤 Hesap Seç", callback_data="account_menu")],
+                [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("🏆 Trophy Deranker", callback_data="trophy_deranker")],
                 [InlineKeyboardButton("🏗️ Depo Kontrol", callback_data="check_storage")],
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
@@ -131,9 +143,10 @@ class TelegramBotController:
         """
         await send(status_text, parse_mode='Markdown', reply_markup=reply_markup)
         
-        # Durum sayfasında otomatik yenileme için task başlat
-        if from_button and update.callback_query:
-            asyncio.create_task(self.auto_refresh_status(update, context))
+        # Durum sayfasında otomatik yenileme için task başlat (sadece bir kez)
+        if from_button and update.callback_query and update.callback_query.message:
+            chat_id = update.callback_query.message.chat.id
+            await self.start_auto_refresh(chat_id, update, context)
     
     def launch_clash_of_clans(self):
         """Clash of Clans'ı masaüstü kısayolundan başlat"""
@@ -159,7 +172,7 @@ class TelegramBotController:
             keyboard = [
                 [InlineKeyboardButton(self.get_bot_button_text(), callback_data=self.get_bot_button_callback()), InlineKeyboardButton(self.get_coc_button_text(), callback_data=self.get_coc_button_callback())],
                 [InlineKeyboardButton("📸 Anlık Görüntü", callback_data="screenshot")],
-                [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("👤 Hesap Seç", callback_data="account_menu")],
+                [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("🏆 Trophy Deranker", callback_data="trophy_deranker")],
                 [InlineKeyboardButton("🏗️ Depo Kontrol", callback_data="check_storage")],
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
@@ -192,7 +205,7 @@ class TelegramBotController:
             keyboard = [
                 [InlineKeyboardButton(self.get_bot_button_text(), callback_data=self.get_bot_button_callback()), InlineKeyboardButton(self.get_coc_button_text(), callback_data=self.get_coc_button_callback())],
                 [InlineKeyboardButton("📸 Anlık Görüntü", callback_data="screenshot")],
-                [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("👤 Hesap Seç", callback_data="account_menu")],
+                [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("🏆 Trophy Deranker", callback_data="trophy_deranker")],
                 [InlineKeyboardButton("🏗️ Depo Kontrol", callback_data="check_storage")],
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
@@ -231,7 +244,7 @@ class TelegramBotController:
             keyboard = [
                 [InlineKeyboardButton(self.get_bot_button_text(), callback_data=self.get_bot_button_callback()), InlineKeyboardButton(self.get_coc_button_text(), callback_data=self.get_coc_button_callback())],
                 [InlineKeyboardButton("📸 Anlık Görüntü", callback_data="screenshot")],
-                [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("👤 Hesap Seç", callback_data="account_menu")],
+                [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("🏆 Trophy Deranker", callback_data="trophy_deranker")],
                 [InlineKeyboardButton("🏗️ Depo Kontrol", callback_data="check_storage")],
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
@@ -241,6 +254,10 @@ class TelegramBotController:
             return
         
         await send("📸 Ekran görüntüsü alınıyor...", parse_mode='Markdown', reply_markup=reply_markup)
+        
+        # İlk screenshot gönderildiğinde eski mesajları temizle
+        await self.cleanup_old_screenshots_with_context(context)
+        
         try:
             from screen_utils import screenshot
             import os
@@ -320,6 +337,8 @@ class TelegramBotController:
                             )
                             # Yeni mesaj ID'sini kaydet
                             self.screenshot_messages[chat_id] = sent_message.message_id
+                            # Dosyaya kaydet
+                            self.save_screenshot_messages()
                             await send("✅ **Ekran görüntüsü gönderildi!**", parse_mode='Markdown', reply_markup=reply_markup)
                             
                             # 3 saniye sonra durum sayfasına geç
@@ -339,6 +358,8 @@ class TelegramBotController:
                             )
                             # Yeni mesaj ID'sini kaydet
                             self.screenshot_messages[chat_id] = sent_message.message_id
+                            # Dosyaya kaydet
+                            self.save_screenshot_messages()
                 except Exception as photo_error:
                     await send(f"❌ **Hata:** Fotoğraf gönderilrken hata: {photo_error}", parse_mode='Markdown', reply_markup=reply_markup)
                 
@@ -365,7 +386,7 @@ class TelegramBotController:
             keyboard = [
                 [InlineKeyboardButton(self.get_bot_button_text(), callback_data=self.get_bot_button_callback()), InlineKeyboardButton(self.get_coc_button_text(), callback_data=self.get_coc_button_callback())],
                 [InlineKeyboardButton("📸 Anlık Görüntü", callback_data="screenshot")],
-                [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("👤 Hesap Seç", callback_data="account_menu")],
+                [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("🏆 Trophy Deranker", callback_data="trophy_deranker")],
                 [InlineKeyboardButton("🏗️ Depo Kontrol", callback_data="check_storage")],
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
@@ -397,7 +418,7 @@ class TelegramBotController:
             keyboard = [
                 [InlineKeyboardButton(self.get_bot_button_text(), callback_data=self.get_bot_button_callback()), InlineKeyboardButton(self.get_coc_button_text(), callback_data=self.get_coc_button_callback())],
                 [InlineKeyboardButton("📸 Anlık Görüntü", callback_data="screenshot")],
-                [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("👤 Hesap Seç", callback_data="account_menu")],
+                [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("🏆 Trophy Deranker", callback_data="trophy_deranker")],
                 [InlineKeyboardButton("🏗️ Depo Kontrol", callback_data="check_storage")],
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
@@ -427,7 +448,7 @@ class TelegramBotController:
             keyboard = [
                 [InlineKeyboardButton(self.get_bot_button_text(), callback_data=self.get_bot_button_callback()), InlineKeyboardButton(self.get_coc_button_text(), callback_data=self.get_coc_button_callback())],
                 [InlineKeyboardButton("📸 Anlık Görüntü", callback_data="screenshot")],
-                [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("👤 Hesap Seç", callback_data="account_menu")],
+                [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("🏆 Trophy Deranker", callback_data="trophy_deranker")],
                 [InlineKeyboardButton("🏗️ Depo Kontrol", callback_data="check_storage")],
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
@@ -457,7 +478,7 @@ class TelegramBotController:
             keyboard = [
                 [InlineKeyboardButton(self.get_bot_button_text(), callback_data=self.get_bot_button_callback())],
                 [InlineKeyboardButton(self.get_coc_button_text(), callback_data=self.get_coc_button_callback()), InlineKeyboardButton("📸 Anlık Görüntü", callback_data="screenshot")],
-                [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("👤 Hesap Seç", callback_data="account_menu")],
+                [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("🏆 Trophy Deranker", callback_data="trophy_deranker")],
                 [InlineKeyboardButton("📈 İstatistik", callback_data="stats")],
                 [InlineKeyboardButton("🏗️ Depo Kontrol", callback_data="check_storage"), InlineKeyboardButton("⚙️ Depo Ayarları", callback_data="storage")],
             ]
@@ -486,7 +507,7 @@ class TelegramBotController:
             keyboard = [
                 [InlineKeyboardButton(self.get_bot_button_text(), callback_data=self.get_bot_button_callback()), InlineKeyboardButton(self.get_coc_button_text(), callback_data=self.get_coc_button_callback())],
                 [InlineKeyboardButton("📸 Anlık Görüntü", callback_data="screenshot")],
-                [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("👤 Hesap Seç", callback_data="account_menu")],
+                [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("🏆 Trophy Deranker", callback_data="trophy_deranker")],
                 [InlineKeyboardButton("🏗️ Depo Kontrol", callback_data="check_storage")],
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
@@ -590,7 +611,7 @@ class TelegramBotController:
             keyboard = [
                 [InlineKeyboardButton(self.get_bot_button_text(), callback_data=self.get_bot_button_callback())],
                 [InlineKeyboardButton(self.get_coc_button_text(), callback_data=self.get_coc_button_callback()), InlineKeyboardButton("📸 Anlık Görüntü", callback_data="screenshot")],
-                [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("👤 Hesap Seç", callback_data="account_menu")],
+                [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("🏆 Trophy Deranker", callback_data="trophy_deranker")],
                 [InlineKeyboardButton("📈 İstatistik", callback_data="stats")],
                 [InlineKeyboardButton("🏗️ Depo Kontrol", callback_data="check_storage"), InlineKeyboardButton("⚙️ Depo Ayarları", callback_data="storage")],
             ]
@@ -612,6 +633,61 @@ class TelegramBotController:
             await send(status_text, parse_mode='Markdown', reply_markup=reply_markup)
         except Exception as e:
             await send(f"❌ Depo durumu alınırken hata: {e}", parse_mode='Markdown', reply_markup=reply_markup)
+
+    async def trophy_deranker_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE, from_button=False) -> None:
+        """Trophy deranker komutu"""
+        if not self.is_valid_update(update):
+            return
+        send = None
+        reply_markup = None
+        if from_button and update.callback_query:
+            send = update.callback_query.edit_message_text
+            # Ana menü butonlarını oluştur
+            keyboard = [
+                [InlineKeyboardButton(self.get_bot_button_text(), callback_data=self.get_bot_button_callback()), InlineKeyboardButton(self.get_coc_button_text(), callback_data=self.get_coc_button_callback())],
+                [InlineKeyboardButton("📸 Anlık Görüntü", callback_data="screenshot")],
+                [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("🏆 Trophy Deranker", callback_data="trophy_deranker")],
+                [InlineKeyboardButton("🏗️ Depo Kontrol", callback_data="check_storage")],
+            ]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+        elif update.message:
+            send = update.message.reply_text
+        if not send:
+            return
+        
+        if not update.effective_user or not self.is_authorized(update.effective_user.id):
+            await send("❌ Bu botu kullanma yetkiniz yok!")
+            return
+        
+        if not self.is_coc_running():
+            await send("⚠️ **Clash of Clans açık değil!** Önce oyunu başlatın.", parse_mode='Markdown', reply_markup=reply_markup)
+            return
+        
+        await send("🏆 **Trophy Deranker başlatılıyor...**\n\n⚡ Zap büyüsü kullanarak trophy düşürme işlemi başlayacak.", parse_mode='Markdown', reply_markup=reply_markup)
+        
+        try:
+            # Trophy deranker'ı ayrı bir thread'de çalıştır
+            import threading
+            import subprocess
+            import sys
+            
+            def run_trophy_deranker():
+                try:
+                    subprocess.run([sys.executable, "trophy_deranker.py"], check=True)
+                    logger.info("Trophy deranker tamamlandı")
+                except subprocess.CalledProcessError as e:
+                    logger.error(f"Trophy deranker hatası: {e}")
+                except Exception as e:
+                    logger.error(f"Trophy deranker çalıştırma hatası: {e}")
+            
+            # Thread'i başlat
+            trophy_thread = threading.Thread(target=run_trophy_deranker, daemon=True)
+            trophy_thread.start()
+            
+            await send("✅ **Trophy Deranker başlatıldı!**\n\n🔄 30 kez zap kullanarak trophy düşürme işlemi devam ediyor...", parse_mode='Markdown', reply_markup=reply_markup)
+            
+        except Exception as e:
+            await send(f"❌ **Hata:** Trophy deranker başlatılamadı: {e}", parse_mode='Markdown', reply_markup=reply_markup)
     
     def run_farming_bot(self) -> None:
         """Farming bot ana döngüsü"""
@@ -702,11 +778,14 @@ class TelegramBotController:
             await self.account_command(update, context, from_button=True)
         elif data == "check_storage":
             await self.check_storage_command(update, context, from_button=True)
+        elif data == "trophy_deranker":
+            await self.trophy_deranker_command(update, context, from_button=True)
+
         elif data == "back_to_main":
             keyboard = [
                 [InlineKeyboardButton(self.get_bot_button_text(), callback_data=self.get_bot_button_callback()), InlineKeyboardButton(self.get_coc_button_text(), callback_data=self.get_coc_button_callback())],
                 [InlineKeyboardButton("📸 Anlık Görüntü", callback_data="screenshot")],
-                [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("👤 Hesap Seç", callback_data="account_menu")],
+                [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("🏆 Trophy Deranker", callback_data="trophy_deranker")],
                 [InlineKeyboardButton("🏗️ Depo Kontrol", callback_data="check_storage")],
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
@@ -717,35 +796,176 @@ class TelegramBotController:
             )
 
     def is_coc_running(self) -> bool:
-        """Clash of Clans uygulaması çalışıyor mu kontrol et"""
-        for proc in psutil.process_iter(['name', 'exe', 'cmdline']):
-            try:
-                pname = proc.info['name'] or ''
-                pexe = proc.info['exe'] or ''
-                pcmd = ' '.join(proc.info['cmdline']) if proc.info['cmdline'] else ''
-                
-                # Google Play Games üzerinden çalışan Clash of Clans'ı kontrol et
-                if (
-                    'clashofclans' in pcmd.lower()
-                    or 'clashofclans' in pexe.lower()
-                    or ('Service.exe' in pname and 'googleplaygames' in pcmd.lower())
-                ):
-                    return True
-            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-                continue
+        """Clash of Clans uygulaması çalışıyor mu kontrol et (optimize edilmiş)"""
+        try:
+            # Önce hızlı kontrol - sadece process isimlerini kontrol et
+            for proc in psutil.process_iter(['name', 'exe']):
+                try:
+                    pname = proc.info['name'] or ''
+                    pexe = proc.info['exe'] or ''
+                    
+                    # Doğrudan Clash of Clans process'i
+                    if 'clashofclans' in pname.lower() or 'clashofclans' in pexe.lower():
+                        return True
+                        
+                except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                    continue
+            
+            # Eğer doğrudan bulunamadıysa, Google Play Games üzerinden kontrol et
+            for proc in psutil.process_iter(['name', 'exe', 'cmdline']):
+                try:
+                    pname = proc.info['name'] or ''
+                    pexe = proc.info['exe'] or ''
+                    pcmd = ' '.join(proc.info.get('cmdline', []) or [])
+                    
+                    # Google Play Games üzerinden çalışan Clash of Clans
+                    if (
+                        'Service.exe' in pname and 'googleplaygames' in pcmd.lower()
+                        or 'clashofclans' in pcmd.lower()
+                        or 'clashofclans' in pexe.lower()
+                    ):
+                        return True
+                        
+                except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                    continue
+                    
+        except Exception as e:
+            logger.warning(f"Process kontrol hatası: {e}")
         return False
 
-    async def auto_refresh_status(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    async def start_auto_refresh(self, chat_id: int, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        """Otomatik yenileme task'ını başlat (sadece bir kez)"""
+        # Eğer bu chat için zaten çalışan bir task varsa, yeni task başlatma
+        if chat_id in self.auto_refresh_running and self.auto_refresh_running[chat_id]:
+            return
+        
+        # Task'ı başlat
+        self.auto_refresh_running[chat_id] = True
+        task = asyncio.create_task(self.auto_refresh_status(chat_id, update, context))
+        self.auto_refresh_tasks[chat_id] = task
+        logger.info(f"Otomatik yenileme task'ı başlatıldı: Chat {chat_id}")
+
+    async def stop_auto_refresh(self, chat_id: int) -> None:
+        """Otomatik yenileme task'ını durdur"""
+        if chat_id in self.auto_refresh_running:
+            self.auto_refresh_running[chat_id] = False
+            
+        if chat_id in self.auto_refresh_tasks:
+            task = self.auto_refresh_tasks[chat_id]
+            if not task.done():
+                task.cancel()
+                try:
+                    await task
+                except asyncio.CancelledError:
+                    pass
+            del self.auto_refresh_tasks[chat_id]
+            logger.info(f"Otomatik yenileme task'ı durduruldu: Chat {chat_id}")
+
+    async def auto_refresh_status(self, chat_id: int, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Durum sayfasını otomatik olarak yeniler"""
         try:
-            while True:
-                # 10 saniye bekle
-                await asyncio.sleep(10)
+            while self.auto_refresh_running.get(chat_id, False):
+                # 30 saniye bekle (10 saniye yerine)
+                await asyncio.sleep(30)
+                
+                # Eğer task durdurulduysa döngüden çık
+                if not self.auto_refresh_running.get(chat_id, False):
+                    break
                 
                 # Durum sayfasını yenile
                 await self.status_command(update, context, from_button=True)
+        except asyncio.CancelledError:
+            logger.info(f"Otomatik yenileme task'ı iptal edildi: Chat {chat_id}")
         except Exception as e:
-            logger.warning(f"Otomatik durum yenileme hatası: {e}")
+            logger.warning(f"Otomatik durum yenileme hatası: Chat {chat_id} - {e}")
+        finally:
+            # Task bittiğinde durumu temizle
+            self.auto_refresh_running[chat_id] = False
+            if chat_id in self.auto_refresh_tasks:
+                del self.auto_refresh_tasks[chat_id]
+
+    async def cleanup_all_screenshot_messages(self, chat_id: int, context: ContextTypes.DEFAULT_TYPE) -> None:
+        """Tüm screenshot mesajlarını temizle (bot yeniden başlatıldığında bile)"""
+        try:
+            # Önce kayıtlı mesajı sil
+            if chat_id in self.screenshot_messages:
+                old_message_id = self.screenshot_messages[chat_id]
+                try:
+                    await context.bot.delete_message(chat_id=chat_id, message_id=old_message_id)
+                    logger.info(f"Kayıtlı screenshot mesajı silindi: Chat {chat_id}, Message {old_message_id}")
+                except Exception as e:
+                    logger.warning(f"Kayıtlı screenshot mesajı silinemedi: Chat {chat_id}, Message {old_message_id} - {e}")
+                finally:
+                    # Sözlükten kaldır
+                    del self.screenshot_messages[chat_id]
+            
+            # Bot yeniden başlatıldığında eski mesajları temizlemek için
+            # kullanıcıya bilgi ver ve manuel temizlik öner
+            logger.info(f"Bot yeniden başlatıldığında eski screenshot mesajları manuel olarak temizlenebilir: Chat {chat_id}")
+                
+        except Exception as e:
+            logger.warning(f"Screenshot temizleme hatası: Chat {chat_id} - {e}")
+
+    def load_screenshot_messages(self) -> None:
+        """Screenshot mesaj takibini dosyadan yükle"""
+        try:
+            if os.path.exists(self.screenshot_tracker_file):
+                with open(self.screenshot_tracker_file, 'r') as f:
+                    self.screenshot_messages = json.load(f)
+                    logger.info(f"Screenshot mesaj takibi yüklendi: {len(self.screenshot_messages)} chat")
+        except Exception as e:
+            logger.warning(f"Screenshot mesaj takibi yüklenemedi: {e}")
+            self.screenshot_messages = {}
+
+    def save_screenshot_messages(self) -> None:
+        """Screenshot mesaj takibini dosyaya kaydet"""
+        try:
+            with open(self.screenshot_tracker_file, 'w') as f:
+                json.dump(self.screenshot_messages, f)
+            logger.debug("Screenshot mesaj takibi kaydedildi")
+        except Exception as e:
+            logger.warning(f"Screenshot mesaj takibi kaydedilemedi: {e}")
+
+
+    
+    async def cleanup_old_screenshots_with_context(self, context: ContextTypes.DEFAULT_TYPE) -> None:
+        """Context ile eski screenshot mesajlarını temizle (ilk screenshot gönderildiğinde çağrılır)"""
+        try:
+            # Dosyadan eski mesaj ID'lerini yükle
+            old_messages = {}
+            if os.path.exists(self.screenshot_tracker_file):
+                try:
+                    with open(self.screenshot_tracker_file, 'r') as f:
+                        old_messages = json.load(f)
+                        logger.info(f"Dosyadan {len(old_messages)} eski screenshot mesajı yüklendi")
+                except Exception as e:
+                    logger.warning(f"Dosya okuma hatası: {e}")
+                    old_messages = {}
+            
+            if not old_messages:
+                logger.info("Temizlenecek eski screenshot mesajı bulunamadı")
+                return
+            
+            deleted_count = 0
+            for chat_id_str, message_id in old_messages.items():
+                try:
+                    chat_id = int(chat_id_str)
+                    await context.bot.delete_message(chat_id=chat_id, message_id=message_id)
+                    deleted_count += 1
+                    logger.info(f"Eski screenshot mesajı silindi: Chat {chat_id}, Message {message_id}")
+                except Exception as e:
+                    logger.warning(f"Eski screenshot mesajı silinemedi: Chat {chat_id_str}, Message {message_id} - {e}")
+            
+            if deleted_count > 0:
+                logger.info(f"Toplam {deleted_count} eski screenshot mesajı temizlendi")
+            
+            # Temizlik sonrası dosyayı temizle
+            self.screenshot_messages.clear()
+            self.save_screenshot_messages()
+            logger.info("Screenshot mesaj takibi dosyası temizlendi")
+            
+        except Exception as e:
+            logger.warning(f"Context ile screenshot temizleme hatası: {e}")
 
     async def delete_previous_screenshot(self, chat_id: int, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Önceki screenshot mesajını sil"""
@@ -756,6 +976,8 @@ class TelegramBotController:
                 logger.info(f"Önceki screenshot mesajı silindi: Chat {chat_id}, Message {old_message_id}")
                 # Silinen mesaj ID'sini sözlükten kaldır
                 del self.screenshot_messages[chat_id]
+                # Dosyaya kaydet
+                self.save_screenshot_messages()
         except Exception as e:
             logger.warning(f"Önceki screenshot mesajı silinemedi: Chat {chat_id} - {e}")
 
@@ -781,6 +1003,12 @@ class TelegramBotController:
                 continue
         return closed_count > 0
 
+    async def cleanup_all_tasks(self) -> None:
+        """Tüm otomatik yenileme task'larını temizle"""
+        for chat_id in list(self.auto_refresh_running.keys()):
+            await self.stop_auto_refresh(chat_id)
+        logger.info("Tüm otomatik yenileme task'ları temizlendi")
+
     def run(self) -> None:
         """Botu çalıştır"""
         if not self.bot_token:
@@ -804,6 +1032,14 @@ class TelegramBotController:
         # Bilinmeyen mesajları işle
         application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, self.handle_message))
         application.add_handler(CallbackQueryHandler(self.button_handler))
+        
+        # Bot kapatılırken temizlik yap
+        async def shutdown_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+            if update.message:
+                await self.cleanup_all_tasks()
+                await update.message.reply_text("Bot kapatılıyor...")
+        
+        application.add_handler(CommandHandler("shutdown", shutdown_handler))
         
         # Botu başlat
         logger.info("🤖 Telegram bot başlatılıyor...")
