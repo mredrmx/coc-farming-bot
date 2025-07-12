@@ -3,6 +3,8 @@ import numpy as np
 import pytesseract
 from PIL import Image
 import os
+import time
+import threading
 from screen_utils import screenshot
 from dotenv import load_dotenv
 import logging
@@ -19,8 +21,20 @@ class StorageChecker:
         self.check_interval = 10  # Her 10 saldırıda bir kontrol
         self.attack_counter = 0
         
+        # Performans iyileştirmeleri
+        self._last_check_time = 0
+        self._check_cooldown = 5  # 5 saniye bekleme süresi
+        self._cached_result = None
+        self._cache_duration = 30  # 30 saniye cache süresi
+        
+        # Thread güvenliği
+        self._lock = threading.Lock()
+        
         # Tesseract ayarları
         pytesseract.pytesseract.tesseract_cmd = os.getenv("TESSERACT_CMD")
+        
+        # Dosya temizliği için geçici dosyalar listesi
+        self._temp_files = set()
         
     def check_storage_fullness(self) -> tuple[bool, float]:
         """
@@ -28,9 +42,24 @@ class StorageChecker:
         Returns:
             tuple[bool, float]: (is_full, fullness_percentage) - is_full True if storage is full (>= 90%), fullness_percentage is the current percentage
         """
+        with self._lock:
+            current_time = time.time()
+            
+            # Cache kontrolü
+            if (self._cached_result and 
+                current_time - self._last_check_time < self._cache_duration):
+                logger.debug("Depo durumu cache'den alındı")
+                return self._cached_result
+            
+            # Cooldown kontrolü
+            if current_time - self._last_check_time < self._check_cooldown:
+                logger.debug("Depo kontrolü cooldown süresinde")
+                return False, 0.0
+        
         try:
             # Depo kontrolü için ayrı dosya kullan
-            storage_path = "storage_screenshot.png"
+            storage_path = f"storage_screenshot_{int(time.time())}.png"
+            self._temp_files.add(storage_path)
             
             # Depo bölgesinin ekran görüntüsünü al (1660, 20, 260, 180)
             screenshot(storage_path, region=(1660, 20, 260, 180))
@@ -39,6 +68,7 @@ class StorageChecker:
             cv2_image = cv2.imread(storage_path)
             if cv2_image is None:
                 logger.error("Depo ekran görüntüsü yüklenemedi!")
+                self._cleanup_file(storage_path)
                 return False, 0.0
             
             # Görüntüyü işle
@@ -66,7 +96,7 @@ class StorageChecker:
             
             if len(lines) < 2:
                 logger.warning(f"Yeterli depo bilgisi okunamadı. Satır sayısı: {len(lines)}")
-                self.cleanup_screenshot()
+                self._cleanup_file(storage_path)
                 return False, 0.0
             
             try:
@@ -84,20 +114,25 @@ class StorageChecker:
                 
                 is_full = fullness_percentage >= 90
                 
+                # Sonucu cache'le
+                with self._lock:
+                    self._cached_result = (is_full, fullness_percentage)
+                    self._last_check_time = current_time
+                
                 # Temizlik yap
-                self.cleanup_screenshot()
+                self._cleanup_file(storage_path)
                 
                 return is_full, fullness_percentage
                 
             except ValueError as e:
                 logger.error(f"Depo değerleri parse edilemedi: {lines}, Hata: {e}")
-                self.cleanup_screenshot()
+                self._cleanup_file(storage_path)
                 return False, 0.0
                     
         except Exception as e:
             logger.error(f"Depo kontrolü sırasında hata: {e}")
             # Hata durumunda da temizlik yap
-            self.cleanup_screenshot()
+            self._cleanup_file(storage_path)
             return False, 0.0
     
     def should_check_storage(self) -> bool:
@@ -106,26 +141,59 @@ class StorageChecker:
         Returns:
             bool: True if storage should be checked
         """
-        self.attack_counter += 1
-        return self.attack_counter % self.check_interval == 0
+        with self._lock:
+            self.attack_counter += 1
+            return self.attack_counter % self.check_interval == 0
     
     def reset_counter(self):
         """Sayaç sıfırlama (test için)"""
-        self.attack_counter = 0
+        with self._lock:
+            self.attack_counter = 0
     
     def get_current_count(self) -> int:
         """Mevcut saldırı sayısını döndürür"""
-        return self.attack_counter
+        with self._lock:
+            return self.attack_counter
     
-    def cleanup_screenshot(self):
-        """Geçici screenshot dosyasını temizler"""
+    def clear_cache(self):
+        """Cache'i temizler"""
+        with self._lock:
+            self._cached_result = None
+            self._last_check_time = 0
+    
+    def set_check_interval(self, interval: int):
+        """Kontrol aralığını ayarlar"""
+        with self._lock:
+            self.check_interval = max(1, interval)
+    
+    def set_cache_duration(self, duration: int):
+        """Cache süresini ayarlar"""
+        with self._lock:
+            self._cache_duration = max(1, duration)
+    
+    def _cleanup_file(self, file_path: str):
+        """Belirli bir dosyayı temizler"""
         try:
-            storage_path = "storage_screenshot.png"
-            if os.path.exists(storage_path):
-                os.remove(storage_path)
-                logger.debug("Depo screenshot dosyası temizlendi")
+            if os.path.exists(file_path):
+                os.remove(file_path)
+                self._temp_files.discard(file_path)
+                logger.debug(f"Dosya temizlendi: {file_path}")
         except Exception as e:
-            logger.warning(f"Screenshot temizleme hatası: {e}")
+            logger.warning(f"Dosya temizleme hatası: {e}")
+    
+    def cleanup_all_temp_files(self):
+        """Tüm geçici dosyaları temizler"""
+        with self._lock:
+            files_to_remove = list(self._temp_files)
+        
+        for file_path in files_to_remove:
+            self._cleanup_file(file_path)
+        
+        logger.info("Tüm geçici dosyalar temizlendi")
+    
+    def __del__(self):
+        """Destructor - temizlik yapar"""
+        self.cleanup_all_temp_files()
 
 # Global instance
 storage_checker = StorageChecker() 
