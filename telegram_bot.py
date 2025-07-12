@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 import threading
 import time
 from datetime import datetime
+import psutil
 
 # Çevre değişkenlerini yükle
 load_dotenv()
@@ -61,6 +62,7 @@ class TelegramBotController:
         
         keyboard = [
             [InlineKeyboardButton("🚀 Botu Başlat", callback_data="startbot"), InlineKeyboardButton("⛔ Botu Durdur", callback_data="stopbot")],
+            [InlineKeyboardButton("🎮 CoC Başlat", callback_data="launch_coc"), InlineKeyboardButton("🔄 CoC Kapat", callback_data="close_coc")],
             [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("👤 Hesap Seç", callback_data="account_menu")],
             [InlineKeyboardButton("📈 İstatistik", callback_data="stats")],
             [InlineKeyboardButton("🏗️ Depo Kontrol", callback_data="check_storage"), InlineKeyboardButton("⚙️ Depo Ayarları", callback_data="storage")],
@@ -83,6 +85,7 @@ class TelegramBotController:
             # Ana menü butonlarını oluştur
             keyboard = [
                 [InlineKeyboardButton("🚀 Botu Başlat", callback_data="startbot"), InlineKeyboardButton("⛔ Botu Durdur", callback_data="stopbot")],
+                [InlineKeyboardButton("🎮 CoC Başlat", callback_data="launch_coc"), InlineKeyboardButton("🔄 CoC Kapat", callback_data="close_coc")],
                 [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("👤 Hesap Seç", callback_data="account_menu")],
                 [InlineKeyboardButton("📈 İstatistik", callback_data="stats")],
                 [InlineKeyboardButton("🏗️ Depo Kontrol", callback_data="check_storage"), InlineKeyboardButton("⚙️ Depo Ayarları", callback_data="storage")],
@@ -97,10 +100,12 @@ class TelegramBotController:
             await send("❌ Bu botu kullanma yetkiniz yok!")
             return
         
+        coc_status = '🟢 Açık' if self.is_coc_running() else '🔴 Kapalı'
         status_text = f"""
 📊 **Bot Durumu**
 
 🔄 **Çalışma Durumu:** {'🟢 Çalışıyor' if self.bot_running else '🔴 Durdu'}
+🎮 **Clash of Clans:** {coc_status}
 👤 **Aktif Hesap:** {self.current_account}
 ⚔️ **Toplam Saldırı:** {self.attack_counter}
 🕐 **Son Saldırı:** {self.last_attack_time if self.last_attack_time else 'Henüz saldırı yapılmadı'}
@@ -119,6 +124,70 @@ class TelegramBotController:
         except Exception as e:
             logger.error(f"Clash of Clans başlatılamadı: {e}")
 
+    async def launch_coc_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE, from_button=False) -> None:
+        """Clash of Clans'ı başlatma komutu"""
+        if not self.is_valid_update(update):
+            return
+        send = None
+        reply_markup = None
+        if from_button and update.callback_query:
+            send = update.callback_query.edit_message_text
+            # Ana menü butonlarını oluştur
+            keyboard = [
+                [InlineKeyboardButton("🚀 Botu Başlat", callback_data="startbot"), InlineKeyboardButton("⛔ Botu Durdur", callback_data="stopbot")],
+                [InlineKeyboardButton("🎮 CoC Başlat", callback_data="launch_coc")],
+                [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("👤 Hesap Seç", callback_data="account_menu")],
+                [InlineKeyboardButton("📈 İstatistik", callback_data="stats")],
+                [InlineKeyboardButton("🏗️ Depo Kontrol", callback_data="check_storage"), InlineKeyboardButton("⚙️ Depo Ayarları", callback_data="storage")],
+            ]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+        elif update.message:
+            send = update.message.reply_text
+        if not send:
+            return
+        
+        await send("🎮 Clash of Clans başlatılıyor...", parse_mode='Markdown', reply_markup=reply_markup)
+        try:
+            self.launch_clash_of_clans()
+            await send("✅ **Clash of Clans başlatıldı!** Oyun yüklenmesi için bekleyin.", parse_mode='Markdown', reply_markup=reply_markup)
+        except Exception as e:
+            await send(f"❌ **Hata:** Clash of Clans başlatılamadı: {e}", parse_mode='Markdown', reply_markup=reply_markup)
+
+    async def close_coc_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE, from_button=False) -> None:
+        """Clash of Clans'ı kapatma komutu"""
+        if not self.is_valid_update(update):
+            return
+        send = None
+        reply_markup = None
+        if from_button and update.callback_query:
+            send = update.callback_query.edit_message_text
+            # Ana menü butonlarını oluştur
+            keyboard = [
+                [InlineKeyboardButton("🚀 Botu Başlat", callback_data="startbot"), InlineKeyboardButton("⛔ Botu Durdur", callback_data="stopbot")],
+                [InlineKeyboardButton("🎮 CoC Başlat", callback_data="launch_coc"), InlineKeyboardButton("🔄 CoC Kapat", callback_data="close_coc")],
+                [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("👤 Hesap Seç", callback_data="account_menu")],
+                [InlineKeyboardButton("📈 İstatistik", callback_data="stats")],
+                [InlineKeyboardButton("🏗️ Depo Kontrol", callback_data="check_storage"), InlineKeyboardButton("⚙️ Depo Ayarları", callback_data="storage")],
+            ]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+        elif update.message:
+            send = update.message.reply_text
+        if not send:
+            return
+        
+        if not self.is_coc_running():
+            await send("⚠️ Clash of Clans zaten kapalı!", parse_mode='Markdown', reply_markup=reply_markup)
+            return
+        
+        await send("🔄 Clash of Clans kapatılıyor...", parse_mode='Markdown', reply_markup=reply_markup)
+        try:
+            if self.close_clash_of_clans():
+                await send("✅ **Clash of Clans kapatıldı!**", parse_mode='Markdown', reply_markup=reply_markup)
+            else:
+                await send("❌ **Hata:** Clash of Clans kapatılamadı!", parse_mode='Markdown', reply_markup=reply_markup)
+        except Exception as e:
+            await send(f"❌ **Hata:** Clash of Clans kapatılırken hata oluştu: {e}", parse_mode='Markdown', reply_markup=reply_markup)
+
     async def startbot_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE, from_button=False) -> None:
         if not self.is_valid_update(update):
             return
@@ -129,6 +198,7 @@ class TelegramBotController:
             # Ana menü butonlarını oluştur
             keyboard = [
                 [InlineKeyboardButton("🚀 Botu Başlat", callback_data="startbot"), InlineKeyboardButton("⛔ Botu Durdur", callback_data="stopbot")],
+                [InlineKeyboardButton("🎮 CoC Başlat", callback_data="launch_coc"), InlineKeyboardButton("🔄 CoC Kapat", callback_data="close_coc")],
                 [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("👤 Hesap Seç", callback_data="account_menu")],
                 [InlineKeyboardButton("📈 İstatistik", callback_data="stats")],
                 [InlineKeyboardButton("🏗️ Depo Kontrol", callback_data="check_storage"), InlineKeyboardButton("⚙️ Depo Ayarları", callback_data="storage")],
@@ -138,10 +208,8 @@ class TelegramBotController:
             send = update.message.reply_text
         if not send:
             return
-        await send("📱 Clash of Clans başlatılıyor...", parse_mode='Markdown', reply_markup=reply_markup)
-        self.launch_clash_of_clans()
-        await send("⏳ Oyun yüklenmesi için 30 saniye bekleniyor...", parse_mode='Markdown', reply_markup=reply_markup)
-        time.sleep(30)
+        
+        #Botu başlat
         self.bot_running = True
         self.bot_thread = threading.Thread(target=self.run_farming_bot)
         self.bot_thread.daemon = True
@@ -158,6 +226,7 @@ class TelegramBotController:
             # Ana menü butonlarını oluştur
             keyboard = [
                 [InlineKeyboardButton("🚀 Botu Başlat", callback_data="startbot"), InlineKeyboardButton("⛔ Botu Durdur", callback_data="stopbot")],
+                [InlineKeyboardButton("🎮 CoC Başlat", callback_data="launch_coc"), InlineKeyboardButton("🔄 CoC Kapat", callback_data="close_coc")],
                 [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("👤 Hesap Seç", callback_data="account_menu")],
                 [InlineKeyboardButton("📈 İstatistik", callback_data="stats")],
                 [InlineKeyboardButton("🏗️ Depo Kontrol", callback_data="check_storage"), InlineKeyboardButton("⚙️ Depo Ayarları", callback_data="storage")],
@@ -183,6 +252,7 @@ class TelegramBotController:
             # Ana menü butonlarını oluştur
             keyboard = [
                 [InlineKeyboardButton("🚀 Botu Başlat", callback_data="startbot"), InlineKeyboardButton("⛔ Botu Durdur", callback_data="stopbot")],
+                [InlineKeyboardButton("🎮 CoC Başlat", callback_data="launch_coc"), InlineKeyboardButton("🔄 CoC Kapat", callback_data="close_coc")],
                 [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("👤 Hesap Seç", callback_data="account_menu")],
                 [InlineKeyboardButton("📈 İstatistik", callback_data="stats")],
                 [InlineKeyboardButton("🏗️ Depo Kontrol", callback_data="check_storage"), InlineKeyboardButton("⚙️ Depo Ayarları", callback_data="storage")],
@@ -213,6 +283,7 @@ class TelegramBotController:
             # Ana menü butonlarını oluştur
             keyboard = [
                 [InlineKeyboardButton("🚀 Botu Başlat", callback_data="startbot"), InlineKeyboardButton("⛔ Botu Durdur", callback_data="stopbot")],
+                [InlineKeyboardButton("🎮 CoC Başlat", callback_data="launch_coc"), InlineKeyboardButton("🔄 CoC Kapat", callback_data="close_coc")],
                 [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("👤 Hesap Seç", callback_data="account_menu")],
                 [InlineKeyboardButton("📈 İstatistik", callback_data="stats")],
                 [InlineKeyboardButton("🏗️ Depo Kontrol", callback_data="check_storage"), InlineKeyboardButton("⚙️ Depo Ayarları", callback_data="storage")],
@@ -241,6 +312,7 @@ class TelegramBotController:
             # Ana menü butonlarını oluştur
             keyboard = [
                 [InlineKeyboardButton("🚀 Botu Başlat", callback_data="startbot"), InlineKeyboardButton("⛔ Botu Durdur", callback_data="stopbot")],
+                [InlineKeyboardButton("🎮 CoC Başlat", callback_data="launch_coc"), InlineKeyboardButton("🔄 CoC Kapat", callback_data="close_coc")],
                 [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("👤 Hesap Seç", callback_data="account_menu")],
                 [InlineKeyboardButton("📈 İstatistik", callback_data="stats")],
                 [InlineKeyboardButton("🏗️ Depo Kontrol", callback_data="check_storage"), InlineKeyboardButton("⚙️ Depo Ayarları", callback_data="storage")],
@@ -271,6 +343,7 @@ class TelegramBotController:
             # Ana menü butonlarını oluştur
             keyboard = [
                 [InlineKeyboardButton("🚀 Botu Başlat", callback_data="startbot"), InlineKeyboardButton("⛔ Botu Durdur", callback_data="stopbot")],
+                [InlineKeyboardButton("🎮 CoC Başlat", callback_data="launch_coc"), InlineKeyboardButton("🔄 CoC Kapat", callback_data="close_coc")],
                 [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("👤 Hesap Seç", callback_data="account_menu")],
                 [InlineKeyboardButton("📈 İstatistik", callback_data="stats")],
                 [InlineKeyboardButton("🏗️ Depo Kontrol", callback_data="check_storage"), InlineKeyboardButton("⚙️ Depo Ayarları", callback_data="storage")],
@@ -360,6 +433,10 @@ class TelegramBotController:
             await self.startbot_command(update, context, from_button=True)
         elif data == "stopbot":
             await self.stopbot_command(update, context, from_button=True)
+        elif data == "launch_coc":
+            await self.launch_coc_command(update, context, from_button=True)
+        elif data == "close_coc":
+            await self.close_coc_command(update, context, from_button=True)
         elif data == "status":
             await self.status_command(update, context, from_button=True)
         elif data == "account_menu":
@@ -384,6 +461,7 @@ class TelegramBotController:
         elif data == "back_to_main":
             keyboard = [
                 [InlineKeyboardButton("🚀 Botu Başlat", callback_data="startbot"), InlineKeyboardButton("⛔ Botu Durdur", callback_data="stopbot")],
+                [InlineKeyboardButton("🎮 CoC Başlat", callback_data="launch_coc"), InlineKeyboardButton("🔄 CoC Kapat", callback_data="close_coc")],
                 [InlineKeyboardButton("📊 Durum", callback_data="status"), InlineKeyboardButton("👤 Hesap Seç", callback_data="account_menu")],
                 [InlineKeyboardButton("📈 İstatistik", callback_data="stats")],
                 [InlineKeyboardButton("🏗️ Depo Kontrol", callback_data="check_storage"), InlineKeyboardButton("⚙️ Depo Ayarları", callback_data="storage")],
@@ -394,6 +472,47 @@ class TelegramBotController:
                 parse_mode='Markdown',
                 reply_markup=reply_markup
             )
+
+    def is_coc_running(self) -> bool:
+        """Clash of Clans uygulaması çalışıyor mu kontrol et"""
+        for proc in psutil.process_iter(['name', 'exe', 'cmdline']):
+            try:
+                pname = proc.info['name'] or ''
+                pexe = proc.info['exe'] or ''
+                pcmd = ' '.join(proc.info['cmdline']) if proc.info['cmdline'] else ''
+                
+                # Google Play Games üzerinden çalışan Clash of Clans'ı kontrol et
+                if (
+                    'clashofclans' in pcmd.lower()
+                    or 'clashofclans' in pexe.lower()
+                    or ('Service.exe' in pname and 'googleplaygames' in pcmd.lower())
+                ):
+                    return True
+            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                continue
+        return False
+
+    def close_clash_of_clans(self) -> bool:
+        """Clash of Clans uygulamasını kapat"""
+        closed_count = 0
+        for proc in psutil.process_iter(['pid', 'name', 'exe', 'cmdline']):
+            try:
+                pname = proc.info['name'] or ''
+                pexe = proc.info['exe'] or ''
+                pcmd = ' '.join(proc.info['cmdline']) if proc.info['cmdline'] else ''
+                
+                # Google Play Games üzerinden çalışan Clash of Clans'ı bul ve kapat
+                if (
+                    'clashofclans' in pcmd.lower()
+                    or 'clashofclans' in pexe.lower()
+                    or ('Service.exe' in pname and 'googleplaygames' in pcmd.lower())
+                ):
+                    proc.terminate()
+                    closed_count += 1
+                    logger.info(f"Clash of Clans process'i kapatıldı: PID {proc.info['pid']}")
+            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                continue
+        return closed_count > 0
 
     def run(self) -> None:
         """Botu çalıştır"""
